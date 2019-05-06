@@ -1,4 +1,4 @@
-package com.javafx.habr_spring.model;
+package com.javafx.habr_spring.domain;
 
 import com.sun.istack.internal.NotNull;
 

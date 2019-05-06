@@ -1,4 +1,4 @@
-package com.javafx.habr_spring.model;
+package com.javafx.habr_spring.domain;
 
 import com.sun.istack.internal.NotNull;
 
@@ -15,7 +15,10 @@ public class CommitData {
     @NotNull
     @Lob
     @Column(name = "filedata")
-    private String filedata;
+    private byte[] filedata;
+
+    @Column(name = "filesize")
+    private Long filesize;
 
     @NotNull
     @Column(name = "commit_date")
@@ -31,8 +34,9 @@ public class CommitData {
     public CommitData() {
     }
 
-    public CommitData(String filedata, Date commit_date, String description, WriterFile commit) {
+    public CommitData(byte[] filedata, Long filesize, Date commit_date, String description, WriterFile commit) {
         this.filedata = filedata;
+        this.filesize = filesize;
         this.commit_date = commit_date;
         this.description = description;
         this.commit = commit;
@@ -46,11 +50,11 @@ public class CommitData {
         this.id = id;
     }
 
-    public String getFiledata() {
+    public byte[] getFiledata() {
         return filedata;
     }
 
-    public void setFiledata(String filedata) {
+    public void setFiledata(byte[] filedata) {
         this.filedata = filedata;
     }
 
@@ -76,5 +80,13 @@ public class CommitData {
 
     public void setCommit(WriterFile commit) {
         this.commit = commit;
+    }
+
+    public Long getFilesize() {
+        return filesize;
+    }
+
+    public void setFilesize(Long filesize) {
+        this.filesize = filesize;
     }
 }

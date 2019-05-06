@@ -1,6 +1,6 @@
 package com.javafx.habr_spring.service;
 
-import com.javafx.habr_spring.model.WriterFile;
+import com.javafx.habr_spring.domain.WriterFile;
 import com.javafx.habr_spring.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

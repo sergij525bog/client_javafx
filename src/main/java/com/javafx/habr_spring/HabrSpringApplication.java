@@ -24,7 +24,6 @@ public class HabrSpringApplication extends ApplicationSupport{
         primaryStage.setOnCloseRequest(event -> {
             ((MenuController) view.getController()).closeProgram();
         });
-        HTMLEditor htmlEditor = new HTMLEditor();
 
         primaryStage.show();
     }

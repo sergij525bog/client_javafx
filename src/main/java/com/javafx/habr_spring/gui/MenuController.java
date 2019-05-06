@@ -1,7 +1,7 @@
 package com.javafx.habr_spring.gui;
 
-import com.javafx.habr_spring.model.CommitData;
-import com.javafx.habr_spring.model.WriterFile;
+import com.javafx.habr_spring.domain.CommitData;
+import com.javafx.habr_spring.domain.WriterFile;
 import com.javafx.habr_spring.service.CommitService;
 import com.javafx.habr_spring.service.PullService;
 import javafx.fxml.FXML;
@@ -117,7 +117,7 @@ public class MenuController {
 
     @FXML
     private void commitFile(){
-        WriterFile file = new WriterFile();
+        /*WriterFile file = new WriterFile();
         CommitData commitData = new CommitData();
         file.setFilename(filename);
         Date date = new Date();
@@ -125,7 +125,7 @@ public class MenuController {
         commitData.setFiledata(area.getText());
         commitData.setCommit_date(date);
         commitData.setDescription("This is an attempt of create and save file");
-        commitService.commitFile(file);
+        commitService.commitFile(file);*/
     }
 
     @FXML
@@ -135,9 +135,9 @@ public class MenuController {
 
     @FXML
     private void pullFile(){
-        Optional<WriterFile> optionalFileModel = pullService.pullFile(1L);
+        /*Optional<WriterFile> optionalFileModel = pullService.pullFile(1L);
         WriterFile writerFile = optionalFileModel.get();
-        System.out.println(writerFile.getFilename());
+        System.out.println(writerFile.getFilename());*/
     }
 
     private void printLog(javafx.scene.control.TextArea area, File file){

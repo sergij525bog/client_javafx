@@ -1,45 +1,58 @@
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.MenuBar?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.TextArea?>
-<VBox id="vbox" prefHeight="400" prefWidth="800"
-      fx:controller="com.javafx.habr_spring.gui.MenuController"
-      xmlns:fx="http://javafx.com/fxml" >
-    <MenuBar fx:id="menuBar">
-        <menus>
-            <Menu text="File">
-                <items>
-                    <MenuItem text="New" onAction="#createFile"/>
-                    <MenuItem text="Open" onAction="#openFile"/>
-                    <MenuItem text="Save" onAction="#saveFile"/>
-                    <MenuItem text="Save as" onAction="#saveFileAs"/>
-                    <SeparatorMenuItem/>
-                    <MenuItem text="Exit" onAction="#closeProgram"/>
-                </items>
-            </Menu>
-            <Menu text="Edit">
-                <items>
-                    <MenuItem text="Copy"/>
-                    <MenuItem text="Cut"/>
-                    <MenuItem text="Paste" />
-                </items>
-            </Menu>
-            <Menu text="Saved options">
-                <items>
-                    <MenuItem text="Commit" onAction="#commitFile"/>
-                    <MenuItem text="Push" onAction="#pushFile"/>
-                    <MenuItem text="Pull" onAction="#pullFile"/>
-                </items>
-            </Menu>
-            <Menu text="Help">
-                <items>
-                    <MenuItem text="Search" disable="true"/>
-                    <MenuItem text="About" onAction="#aboutProgram"/>
-                </items>
-            </Menu>
-        </menus>
-    </MenuBar>
-    <TextArea fx:id="area" />
-</VBox>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.web.HTMLEditor?>
+
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javafx.habr_spring.gui.MenuController">
+   <bottom>
+      <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </bottom>
+   <top>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <top>
+             <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+                 <menus>
+                     <Menu text="File">
+                         <items>
+                             <MenuItem onAction="#createFile" text="New" />
+                             <MenuItem onAction="#openFile" text="Open" />
+                             <MenuItem onAction="#saveFile" text="Save" />
+                             <MenuItem onAction="#saveFileAs" text="Save as" />
+                             <SeparatorMenuItem />
+                             <MenuItem onAction="#closeProgram" text="Exit" />
+                         </items>
+                     </Menu>
+                     <Menu text="Edit">
+                         <items>
+                             <MenuItem text="Copy" />
+                             <MenuItem text="Cut" />
+                             <MenuItem text="Paste" />
+                         </items>
+                     </Menu>
+                     <Menu text="Saved options">
+                         <items>
+                             <MenuItem onAction="#commitFile" text="Commit" />
+                             <MenuItem onAction="#pushFile" text="Push" />
+                             <MenuItem onAction="#pullFile" text="Pull" />
+                         </items>
+                     </Menu>
+                     <Menu text="Help">
+                         <items>
+                             <MenuItem disable="true" text="Search" />
+                             <MenuItem onAction="#aboutProgram" text="About" />
+                         </items>
+                     </Menu>
+                 </menus>
+             </MenuBar>
+         </top>
+         <center>
+            <HTMLEditor fx:id="htmlEditor" htmlText="&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body contenteditable=&quot;true&quot;&gt;&lt;/body&gt;&lt;/html&gt;" prefHeight="200.0" prefWidth="506.0" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+   </top>
+</BorderPane>
