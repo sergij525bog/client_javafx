@@ -2,6 +2,8 @@ package com.javafx.habr_spring.gui;
 
 import com.javafx.habr_spring.domain.CommitData;
 import com.javafx.habr_spring.domain.WriterFile;
+import com.javafx.habr_spring.model.FileModel;
+import com.javafx.habr_spring.model.OpenFileType;
 import com.javafx.habr_spring.service.CommitService;
 import com.javafx.habr_spring.service.PullService;
 import javafx.fxml.FXML;
@@ -31,7 +33,9 @@ public class MenuController {
 
     private final FileChooser fileChooser = new FileChooser();
     private static File file;
+    private static File directory;
     private String filename;
+    private FileModel fileModel = new FileModel(fileChooser);
 
     @FXML
     public void initialize() {
@@ -42,23 +46,21 @@ public class MenuController {
     @PostConstruct
     public void init() {
         menuBar = new MenuBar();
-        /*fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("All files", "*.*"),
-                new FileChooser.ExtensionFilter("TXT", "*.txt"),
-                new FileChooser.ExtensionFilter("DOCX", "*.docx")
-        );*/
+    }
+
+    @FXML
+    public void openProject() {
+        file = fileModel.open(OpenFileType.PROJECT);
     }
 
     @FXML
     private void openFile(){
         try {
-            file = fileChooser.showOpenDialog(window);
+            file = fileModel.open(OpenFileType.FILE);
             if(file != null) {
-                this.filename = file.getAbsolutePath();
                 FileReader reader = new FileReader(file);
                 Scanner scanner = new Scanner(reader);
-                area.setText("");
+                area.clear();
                 while (scanner.hasNext()) {
                     area.appendText(scanner.nextLine() + "\n");
                 }
@@ -149,7 +151,37 @@ public class MenuController {
     }
 
     @FXML
+    public void createProject() {
+
+    }
+
+    @FXML
+    public void createDirectory() {
+
+    }
+
+    @FXML
     public void createFile() {
+
+    }
+
+    @FXML
+    public void renameDirectory() {
+
+    }
+
+    @FXML
+    public void renameFile() {
+
+    }
+
+    @FXML
+    public void deleteDirectory() {
+
+    }
+
+    @FXML
+    public void deleteFile() {
 
     }
 }

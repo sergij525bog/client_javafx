@@ -14,11 +14,11 @@
     <name>habr_spring</name>
     <description>Demo project for Spring Boot</description>
 
-    <properties>
+    <properties> baka
         <java.version>1.8</java.version>
     </properties>
 
-    <dependencies>
+    <dependencies> 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
