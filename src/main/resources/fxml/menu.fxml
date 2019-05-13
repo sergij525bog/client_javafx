@@ -11,61 +11,69 @@
 <?import javafx.scene.layout.BorderPane?>
 
 <BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.javafx.habr_spring.gui.MenuController">
-   <top>
-       <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
-           <menus>
-               <Menu text="File">
-                   <items>
-                       <MenuItem onAction="#createProject" text="Нова проект"/>
-                       <MenuItem onAction="#createDirectory" text="Нова папка" />
-                       <MenuItem onAction="#createFile" text="Новий документ" />
-                       <MenuItem onAction="#openProject" text="Відкрити проект" />
-                       <MenuItem onAction="#openFile" text="Відкрити документ" />
-                       <MenuItem onAction="#saveFile" text="Зберегти файл" />
-                       <MenuItem onAction="#saveFileAs" text="Зберегти файл як..." />
-                       <MenuItem onAction="#renameDirectory" text="Перейменувати папку" />
-                       <MenuItem onAction="#renameFile" text="Перейменувати файл" />
-                       <MenuItem onAction="#deleteDirectory" text="Видалити папку" />
-                       <MenuItem onAction="#deleteFile" text="Видалити файл" />
-                       <SeparatorMenuItem />
-                       <MenuItem onAction="#closeProgram" text="Вихід" />
-                   </items>
-               </Menu>
-               <Menu text="Edit">
-                   <items>
-                       <MenuItem text="Copy" />
-                       <MenuItem text="Cut" />
-                       <MenuItem text="Paste" />
-                   </items>
-               </Menu>
-               <Menu text="Saved options">
-                   <items>
-                       <MenuItem onAction="#commitFile" text="Зберегти на комп'ютері" />
-                       <MenuItem onAction="#pushFile" text="Завантажити на сервер" />
-                       <MenuItem onAction="#pullFile" text="Завантажити з сервера" />
-                   </items>
-               </Menu>
-               <Menu text="Help">
-                   <items>
-                       <MenuItem disable="true" text="Search" />
-                       <MenuItem onAction="#aboutProgram" text="About" />
-                   </items>
-               </Menu>
-           </menus>
-       </MenuBar>
-   </top>
-   <center>
-      <TabPane BorderPane.alignment="CENTER">
-         <tabs>
-            <Tab>
-               <content>
-                  <TextArea fx:id="area" prefHeight="200.0" prefWidth="200.0" />
-               </content>
-            </Tab>
-         </tabs>
-      </TabPane>
-   </center>
-   <bottom>
+    <top>
+        <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+            <menus>
+                <Menu text="File">
+                    <items>
+                        <Menu text="Новий...">
+                            <MenuItem onAction="#createProject" text="Проект" />
+                            <MenuItem onAction="#createDirectory" text="Каталог" />
+                            <MenuItem onAction="#createFile" text="Файл" />
+                        </Menu>
+                        <Menu text="Відкрити...">
+                            <MenuItem onAction="#openProject" text="Проект" />
+                            <MenuItem onAction="#openFile" text="Файл" />
+                        </Menu>
+                        <MenuItem onAction="#saveFile" text="Зберегти файл" />
+                        <MenuItem onAction="#saveFileAs" text="Зберегти файл як..." />
+                        <Menu text="Перейменувати...">
+                            <MenuItem onAction="#renameDirectory" text="Каталог" />
+                            <MenuItem onAction="#renameFile" text="Файл" />
+                        </Menu>
+                        <Menu text="Видалити...">
+                            <MenuItem onAction="#deleteDirectory" text="Каталог" />
+                            <MenuItem onAction="#deleteFile" text="Файл" />
+                        </Menu>
+                        <SeparatorMenuItem />
+                        <MenuItem onAction="#closeProgram" text="Вихід" />
+                    </items>
+                </Menu>
+                <Menu text="Edit">
+                    <items>
+                        <MenuItem text="Copy" />
+                        <MenuItem text="Cut" />
+                        <MenuItem text="Paste" />
+                    </items>
+                </Menu>
+                <Menu text="Saved options">
+                    <items>
+                        <MenuItem onAction="#commitFile" text="Зберегти на комп'ютері" />
+                        <MenuItem onAction="#pushFile" text="Завантажити на сервер" />
+                        <MenuItem onAction="#pullFile" text="Завантажити з сервера" />
+                    </items>
+                </Menu>
+                <Menu text="Help">
+                    <items>
+                        <MenuItem disable="true" text="Search" />
+                        <MenuItem onAction="#aboutProgram" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <center>
+        <TabPane BorderPane.alignment="CENTER">
+            <tabs>
+                <Tab>
+                    <content>
+                        <TextArea fx:id="area" prefHeight="200.0" prefWidth="200.0" />
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+   <left>
       <TreeView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </bottom>
+   </left>
 </BorderPane>

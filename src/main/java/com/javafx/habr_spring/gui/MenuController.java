@@ -50,13 +50,13 @@ public class MenuController {
 
     @FXML
     public void openProject() {
-        file = fileModel.open(OpenFileType.PROJECT);
+        file = fileModel.open(OpenFileType.PROJECT, window);
     }
 
     @FXML
     private void openFile(){
         try {
-            file = fileModel.open(OpenFileType.FILE);
+            file = fileModel.open(OpenFileType.FILE, window);
             if(file != null) {
                 FileReader reader = new FileReader(file);
                 Scanner scanner = new Scanner(reader);

@@ -2,6 +2,7 @@ package com.javafx.habr_spring.model;
 
 import com.javafx.habr_spring.domain.WriterFile;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,35 +46,36 @@ public class FileModel {
         );
     }
 
-    public File open(OpenFileType type) {
+    public File open(OpenFileType type, Stage window) {
         switch(type) {
             case PROJECT: {
                 fileChooser.setInitialDirectory(getProjectsDirectory());
+                break;
             }
             case FILE:
                 fileChooser.setInitialDirectory(getCurrentDirectory());
+                break;
         }
-        return fileChooser.showOpenDialog(null);
+        return fileChooser.showOpenDialog(window);
     }
 
     private File getCurrentDirectory() {
+        StringBuilder homeProject = new StringBuilder();
         try {
             File file = new File((System.getProperty("user.home") + "/all_projects.txt"));
             FileReader reader = new FileReader(file);
             Scanner scanner = new Scanner(reader);
-            String homeProject = "";
             while (scanner.hasNext()) {
-                homeProject += scanner.nextLine() + "\n";
+                homeProject.append(scanner.nextLine());
             }
-            System.out.println(homeProject);
+            System.out.println("Home project is " + homeProject);
             reader.close();
             scanner.close();
-            } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            } catch (IOException e) {
             e.printStackTrace();
         }
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home") + "/Документи"));
+
+        fileChooser.setInitialDirectory(new File(homeProject.toString()));
         file = fileChooser.getInitialDirectory();
         System.out.println("File is " + file.getAbsolutePath());
         return file;
