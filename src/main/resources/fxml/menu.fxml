@@ -46,7 +46,7 @@
                         <MenuItem text="Paste" />
                     </items>
                 </Menu>
-                <Menu text="Saved options">
+                <Menu text="Версії">
                     <items>
                         <MenuItem onAction="#commitFile" text="Зберегти на комп'ютері" />
                         <MenuItem onAction="#pushFile" text="Завантажити на сервер" />

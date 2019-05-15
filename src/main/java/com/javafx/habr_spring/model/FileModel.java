@@ -1,21 +1,17 @@
 package com.javafx.habr_spring.model;
 
-import com.javafx.habr_spring.domain.WriterFile;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.List;
 import java.util.Scanner;
 
 public class FileModel {
     private final FileChooser fileChooser;
+    private final DirectoryChooser directoryChooser;
     private static File file;
     private static File directory;
     private String filename;
@@ -36,7 +32,7 @@ public class FileModel {
         }
     }*/
 
-    public FileModel(FileChooser fileChooser) {
+    public FileModel(FileChooser fileChooser, DirectoryChooser directoryChooser) {
         this.fileChooser = fileChooser;
         this.fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         this.fileChooser.getExtensionFilters().addAll(
@@ -44,19 +40,21 @@ public class FileModel {
                 new FileChooser.ExtensionFilter(".TXT", "*.txt"),
                 new FileChooser.ExtensionFilter(".DOCX", "*.docx*")
         );
+        this.directoryChooser = directoryChooser;
+        this.directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
     }
 
     public File open(OpenFileType type, Stage window) {
         switch(type) {
             case PROJECT: {
-                fileChooser.setInitialDirectory(getProjectsDirectory());
-                break;
+                directoryChooser.setInitialDirectory(getProjectsDirectory());
+                return directoryChooser.showDialog(window);
             }
             case FILE:
                 fileChooser.setInitialDirectory(getCurrentDirectory());
-                break;
+                return fileChooser.showOpenDialog(window);
         }
-        return fileChooser.showOpenDialog(window);
+        return null;
     }
 
     private File getCurrentDirectory() {

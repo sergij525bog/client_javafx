@@ -1,15 +1,14 @@
-package com.javafx.habr_spring.domain;
+package com.javafx.habr_spring.server;
 
 import com.sun.istack.internal.NotNull;
 
 import javax.persistence.*;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "files")
-public class WriterFile {
+public class ServerFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,12 +32,12 @@ public class WriterFile {
     private Project project;
 
     @OneToMany(mappedBy = "commit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<CommitData> commits = new HashSet<>();
+    private Set<PullData> commits = new HashSet<>();
 
-    public WriterFile() {
+    public ServerFile() {
     }
 
-    public WriterFile(String filename, byte[] filedata, Long filesize, Project project) {
+    public ServerFile(String filename, byte[] filedata, Long filesize, Project project) {
         this.filename = filename;
         this.filedata = filedata;
         this.filesize = filesize;
@@ -69,11 +68,11 @@ public class WriterFile {
         this.project = project;
     }
 
-    public Set<CommitData> getCommits() {
+    public Set<PullData> getCommits() {
         return commits;
     }
 
-    public void setCommits(Set<CommitData> commits) {
+    public void setCommits(Set<PullData> commits) {
         this.commits = commits;
     }
 

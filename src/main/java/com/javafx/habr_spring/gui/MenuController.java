@@ -9,6 +9,8 @@ import com.javafx.habr_spring.service.PullService;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Optional;
-import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class MenuController {
@@ -29,13 +30,15 @@ public class MenuController {
 
     @FXML private TextArea area;
     @FXML private MenuBar menuBar;
+    @FXML private TextField descriptionField;
     private Stage window;
 
     private final FileChooser fileChooser = new FileChooser();
+    private final DirectoryChooser directoryChooser = new DirectoryChooser();
     private static File file;
     private static File directory;
     private String filename;
-    private FileModel fileModel = new FileModel(fileChooser);
+    private FileModel fileModel = new FileModel(fileChooser, directoryChooser);
 
     @FXML
     public void initialize() {
@@ -99,7 +102,7 @@ public class MenuController {
 
     @FXML
     public void closeProgram(){
-        if(file == null || file.toString().equals(area.getText())){
+        if(file == null || file.toString().equals(area.getText()) || file.isDirectory()){
             System.out.println("Not found changes, program closed");
         } else {
             this.filename = file.getAbsolutePath();
@@ -119,15 +122,14 @@ public class MenuController {
 
     @FXML
     private void commitFile(){
-        /*WriterFile file = new WriterFile();
-        CommitData commitData = new CommitData();
-        file.setFilename(filename);
-        Date date = new Date();
+        WriterFile file = new WriterFile();
+        file.setFilename(MenuController.file.getName());
         file.setFilesize(MenuController.file.length());
-        commitData.setFiledata(area.getText());
-        commitData.setCommit_date(date);
-        commitData.setDescription("This is an attempt of create and save file");
-        commitService.commitFile(file);*/
+        file.setFiledata(area.getText().getBytes());
+        ArrayList<WriterFile> filesToCommit = commitService.checkFilesOnChanges(file);
+        if(!filesToCommit.isEmpty()) {
+            commitService.commitFiles(filesToCommit, descriptionField.getText());
+        }
     }
 
     @FXML
