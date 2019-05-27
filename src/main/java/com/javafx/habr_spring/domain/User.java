@@ -16,7 +16,7 @@ public class User {
 
     @NonNull
     @Column(name = "username")
-    private String uername;
+    private String username;
 
     @NotNull
     @Column(name = "password")
@@ -51,16 +51,16 @@ public class User {
     public User() {
     }
 
-    public User(String uername, String password, boolean active, Set<Roles> roles, Set<Project> projects) {
-        this.uername = uername;
+    public User(String username, String password, boolean active, Set<Roles> roles, Set<Project> projects) {
+        this.username = username;
         this.password = password;
         this.active = active;
         this.roles = roles;
         this.projects = projects;
     }
 
-    public User(String uername, String password, boolean active, String activationCode, String email, Set<Roles> roles, Set<Project> projects) {
-        this.uername = uername;
+    public User(String username, String password, boolean active, String activationCode, String email, Set<Roles> roles, Set<Project> projects) {
+        this.username = username;
         this.password = password;
         this.active = active;
         this.activationCode = activationCode;
@@ -77,12 +77,12 @@ public class User {
         this.id = id;
     }
 
-    public String getUername() {
-        return uername;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUername(String uername) {
-        this.uername = uername;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

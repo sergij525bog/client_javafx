@@ -21,8 +21,8 @@ public class CommitData {
     private Long filesize;
 
     @NotNull
-    @Column(name = "commit_date")
-    private Date commit_date;
+    @Column(name = "commitDate")
+    private Date commitDate;
 
     @Column(name = "description")
     private String description;
@@ -34,10 +34,10 @@ public class CommitData {
     public CommitData() {
     }
 
-    public CommitData(byte[] filedata, Long filesize, Date commit_date, String description, WriterFile commit) {
+    public CommitData(byte[] filedata, Long filesize, Date commitDate, String description, WriterFile commit) {
         this.filedata = filedata;
         this.filesize = filesize;
-        this.commit_date = commit_date;
+        this.commitDate = commitDate;
         this.description = description;
         this.commit = commit;
     }
@@ -58,12 +58,12 @@ public class CommitData {
         this.filedata = filedata;
     }
 
-    public Date getCommit_date() {
-        return commit_date;
+    public Date getCommitDate() {
+        return commitDate;
     }
 
-    public void setCommit_date(Date commit_date) {
-        this.commit_date = commit_date;
+    public void setCommitDate(Date commitDate) {
+        this.commitDate = commitDate;
     }
 
     public String getDescription() {

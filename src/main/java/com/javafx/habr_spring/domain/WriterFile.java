@@ -14,13 +14,18 @@ public class WriterFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /*@NotNull
+    @NotNull
     @Column(name = "filename")
-    private Path filename;*/
+    private String filename;
 
     @NotNull
-    @Column(name = "filedata")
+    @Lob
+    @Column(name = "filedata", columnDefinition="OID")
     private byte[] filedata;
+
+    @NotNull
+    @Column(name = "filesize")
+    private Long filesize;
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
@@ -33,17 +38,11 @@ public class WriterFile {
     public WriterFile() {
     }
 
-    /*public WriterFile(Path filename, byte[] filedata, Project project, Set<CommitData> commits) {
+    public WriterFile(String filename, byte[] filedata, Long filesize, Project project) {
         this.filename = filename;
         this.filedata = filedata;
+        this.filesize = filesize;
         this.project = project;
-        this.commits = commits;
-    }*/
-
-    public WriterFile(byte[] filedata, Project project, Set<CommitData> commits) {
-        this.filedata = filedata;
-        this.project = project;
-        this.commits = commits;
     }
 
     public Long getId() {
@@ -54,13 +53,13 @@ public class WriterFile {
         this.id = id;
     }
 
-    /*public Path getFilename() {
+    public String getFilename() {
         return filename;
     }
 
-    public void setFilename(Path filename) {
+    public void setFilename(String filename) {
         this.filename = filename;
-    }*/
+    }
 
     public Project getProject() {
         return project;
@@ -84,5 +83,13 @@ public class WriterFile {
 
     public void setFiledata(byte[] filedata) {
         this.filedata = filedata;
+    }
+
+    public Long getFilesize() {
+        return filesize;
+    }
+
+    public void setFilesize(Long filesize) {
+        this.filesize = filesize;
     }
 }

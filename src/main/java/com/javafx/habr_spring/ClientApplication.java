@@ -3,14 +3,13 @@ package com.javafx.habr_spring;
 import com.javafx.habr_spring.configuration.ControllersConfiguration;
 import com.javafx.habr_spring.gui.MenuController;
 import javafx.scene.Scene;
-import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class HabrSpringApplication extends ApplicationSupport{
+public class ClientApplication extends ApplicationSupport{
     @Qualifier("mainView")
     @Autowired
     private ControllersConfiguration.ViewHolder view;
@@ -29,6 +28,6 @@ public class HabrSpringApplication extends ApplicationSupport{
     }
 
     public static void main(String[] args) {
-        launchApp(HabrSpringApplication.class, args);
+        launchApp(ClientApplication.class, args);
     }
 }
