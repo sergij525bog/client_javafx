@@ -9,5 +9,5 @@ import java.util.Date;
 @Repository
 public interface CommitRepository extends JpaRepository<CommitData, Long> {
     CommitData findByCommit(Long id);
-    CommitData findByCommitAndAndCommit_date(Long id, Date commitDate);
+    CommitData findByCommitAndCommitDate(Long id, Date commitDate);
 }

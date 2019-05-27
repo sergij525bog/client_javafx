@@ -7,9 +7,7 @@ import com.javafx.habr_spring.model.OpenFileType;
 import com.javafx.habr_spring.service.CommitService;
 import com.javafx.habr_spring.service.PullService;
 import javafx.fxml.FXML;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -21,16 +19,31 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class MenuController {
-    @Autowired private CommitService commitService;
-    @Autowired private PullService pullService;
+    @Autowired
+    private CommitService commitService;
+    @Autowired
+    private PullService pullService;
 
-    @FXML private TextArea area;
-    @FXML private MenuBar menuBar;
-    @FXML private TextField descriptionField;
+    @FXML
+    private TextArea area;
+
+    @FXML
+    private MenuBar menuBar;
+
+    @FXML
+    private TextField descriptionField;
+
+    @FXML
+    private TreeView filesTree;
+
     private Stage window;
 
     private final FileChooser fileChooser = new FileChooser();
@@ -53,7 +66,57 @@ public class MenuController {
 
     @FXML
     public void openProject() {
-        file = fileModel.open(OpenFileType.PROJECT, window);
+        directory = fileModel.open(OpenFileType.PROJECT, window);
+        filesTree = new TreeView();
+        TreeItem<String> projectDir = new TreeItem<>(directory.getName());
+        projectDir.setExpanded(true);
+        getTree(directory.getAbsolutePath());
+
+    }
+
+    public void getTree(String path) {
+        TreeItem<Object> tree = new TreeItem<>(path.substring(path.lastIndexOf(File.separator)));
+
+        List<TreeItem<Object>> dirs = new ArrayList<>();
+        List<TreeItem<Object>> files = new ArrayList<>();
+
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(path))) {
+            for(Path dPath: directoryStream) {
+                if (Files.isDirectory(dPath)) {
+                    TreeItem<Object> subDirectory = new TreeItem<>(path);
+                    getSubLeafs(dPath, subDirectory);
+                    dirs.add(subDirectory);
+                } else {
+                    files.add(getLeafs(dPath));
+                }
+            }
+
+            tree.getChildren().addAll(dirs);
+            tree.getChildren().addAll(files);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private TreeItem<Object> getLeafs(Path subPath) {
+        String strPath = subPath.toString();
+        TreeItem<Object> leafs = new TreeItem<>(strPath.substring(1 + strPath.lastIndexOf(File.separator)));
+        return leafs;
+    }
+
+    private void getSubLeafs(Path subPath, TreeItem<Object> parent) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(subPath.toString()))) {
+            for(Path subDir: directoryStream) {
+                // explicit search for files because we dont want to get sub-sub-directories
+                if (!Files.isDirectory(subDir)) {
+                    String subTree = subDir.toString();
+                    TreeItem<Object> subLeafs = new TreeItem<>(subTree.substring(1 + subTree.lastIndexOf(File.separator)));
+                    parent.getChildren().add(subLeafs);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -144,7 +207,7 @@ public class MenuController {
         System.out.println(writerFile.getFilename());*/
     }
 
-    private void printLog(javafx.scene.control.TextArea area, File file){
+    private void printLog(TextArea area, File file){
 
     }
 

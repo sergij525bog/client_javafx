@@ -37,7 +37,7 @@ public class CommitService {
             commit.setCommit(fileRepository.findByFilename(files.get(i).getFilename()));
             commit.setFiledata(files.get(i).getFiledata());
             commit.setFilesize(files.get(i).getFilesize());
-            commit.setCommit_date(new Date());
+            commit.setCommitDate(new Date());
             commit.setDescription(commitDescription + i);
             commits.add(commit);
         }
@@ -65,7 +65,7 @@ public class CommitService {
         CommitData commit = new CommitData();
         WriterFile file = new WriterFile();
         for (WriterFile fileFromDb : files) {
-           commit = commitRepository.findByCommitAndAndCommit_date(fileFromDb.getId(), commitDate);
+           commit = commitRepository.findByCommitAndCommitDate(fileFromDb.getId(), commitDate);
            file = fileRepository.findById(commit.getCommit().getId()).get();
            file.setFiledata(commit.getFiledata());
            file.setFilesize(commit.getFilesize());

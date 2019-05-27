@@ -16,22 +16,6 @@ public class FileModel {
     private static File directory;
     private String filename;
 
-    /*public void open(Path file) {
-        try {
-            List<String> filedata = Files.readAllLines(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void save(WriterFile file) {
-        try {
-            Files.write(file.getFilename(), file.getFiledata(), StandardOpenOption.WRITE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
-
     public FileModel(FileChooser fileChooser, DirectoryChooser directoryChooser) {
         this.fileChooser = fileChooser;
         this.fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -82,4 +66,8 @@ public class FileModel {
     private File getProjectsDirectory() {
         return new File(System.getProperty("user.home"));
     }
+
+
+
+
 }
