@@ -68,9 +68,7 @@ public class FileModel {
             System.out.println(homeProject);
             reader.close();
             scanner.close();
-            } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            } catch (IOException e) {
             e.printStackTrace();
         }
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home") + "/Документи"));
