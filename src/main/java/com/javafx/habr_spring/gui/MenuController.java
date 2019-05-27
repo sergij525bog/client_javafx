@@ -76,7 +76,6 @@ public class MenuController {
 
     public void getTree(String path) {
         TreeItem<Object> tree = new TreeItem<>(path.substring(path.lastIndexOf(File.separator)));
-
         List<TreeItem<Object>> dirs = new ArrayList<>();
         List<TreeItem<Object>> files = new ArrayList<>();
 
