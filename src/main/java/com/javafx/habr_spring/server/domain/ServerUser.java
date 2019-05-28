@@ -1,7 +1,6 @@
 package com.javafx.habr_spring.server.domain;
 
 import com.sun.istack.internal.NotNull;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -9,20 +8,17 @@ import java.util.Set;
 
 @Entity
 @Table(name = "usr")
-public class User {
+public class ServerUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NonNull
     @Column(name = "username")
     private String username;
 
-    @NotNull
     @Column(name = "password")
     private String password;
 
-    @NonNull
     @Column(name = "active")
     private boolean active;
 
@@ -32,10 +28,10 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @ElementCollection(targetClass = Roles.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = ServerRoles.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Set<Roles> roles;
+    private Set<ServerRoles> roles;
 
     @ManyToMany(
             fetch = FetchType.EAGER,
@@ -46,27 +42,27 @@ public class User {
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "project_id")}
     )
-    private Set<Project> projects = new HashSet<>();
+    private Set<ServerProject> serverProjects = new HashSet<>();
 
-    public User() {
+    public ServerUser() {
     }
 
-    public User(String username, String password, boolean active, Set<Roles> roles, Set<Project> projects) {
+    public ServerUser(String username, String password, boolean active, Set<ServerRoles> roles, Set<ServerProject> serverProjects) {
         this.username = username;
         this.password = password;
         this.active = active;
         this.roles = roles;
-        this.projects = projects;
+        this.serverProjects = serverProjects;
     }
 
-    public User(String username, String password, boolean active, String activationCode, String email, Set<Roles> roles, Set<Project> projects) {
+    public ServerUser(String username, String password, boolean active, String activationCode, String email, Set<ServerRoles> roles, Set<ServerProject> serverProjects) {
         this.username = username;
         this.password = password;
         this.active = active;
         this.activationCode = activationCode;
         this.email = email;
         this.roles = roles;
-        this.projects = projects;
+        this.serverProjects = serverProjects;
     }
 
     public Long getId() {
@@ -117,19 +113,19 @@ public class User {
         this.email = email;
     }
 
-    public Set<Roles> getRoles() {
+    public Set<ServerRoles> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Roles> roles) {
+    public void setRoles(Set<ServerRoles> roles) {
         this.roles = roles;
     }
 
-    public Set<Project> getProjects() {
-        return projects;
+    public Set<ServerProject> getServerProjects() {
+        return serverProjects;
     }
 
-    public void setProjects(Set<Project> projects) {
-        this.projects = projects;
+    public void setServerProjects(Set<ServerProject> serverProjects) {
+        this.serverProjects = serverProjects;
     }
 }

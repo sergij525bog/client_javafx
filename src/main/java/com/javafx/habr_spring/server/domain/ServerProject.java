@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "projects")
-public class Project {
+public class ServerProject {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -18,22 +18,22 @@ public class Project {
     private String name;
 
     @ManyToMany(mappedBy = "projects")
-    private Set<User> users = new HashSet<>();
+    private Set<ServerUser> serverUsers = new HashSet<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<ServerFile> files = new HashSet<>();
 
-    public Project() {
+    public ServerProject() {
     }
 
-    public Project(String name, Set<User> users) {
+    public ServerProject(String name, Set<ServerUser> serverUsers) {
         this.name = name;
-        this.users = users;
+        this.serverUsers = serverUsers;
     }
 
-    public Project(String name, Set<User> users, Set<ServerFile> files) {
+    public ServerProject(String name, Set<ServerUser> serverUsers, Set<ServerFile> files) {
         this.name = name;
-        this.users = users;
+        this.serverUsers = serverUsers;
         this.files = files;
     }
 }

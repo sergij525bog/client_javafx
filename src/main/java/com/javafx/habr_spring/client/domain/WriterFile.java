@@ -1,7 +1,5 @@
 package com.javafx.habr_spring.client.domain;
 
-import com.sun.istack.internal.NotNull;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,23 +11,19 @@ public class WriterFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @Column(name = "filename")
     private String filename;
 
-    @NotNull
     @Lob
     @Column(name = "filedata", columnDefinition="OID")
     private byte[] filedata;
 
-    @NotNull
     @Column(name = "filesize")
     private Long filesize;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
-    private Project project;
+    private ClientProject clientProject;
 
     @OneToMany(mappedBy = "commit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<CommitData> commits = new HashSet<>();
@@ -37,11 +31,11 @@ public class WriterFile {
     public WriterFile() {
     }
 
-    public WriterFile(String filename, byte[] filedata, Long filesize, Project project) {
+    public WriterFile(String filename, byte[] filedata, Long filesize, ClientProject clientProject) {
         this.filename = filename;
         this.filedata = filedata;
         this.filesize = filesize;
-        this.project = project;
+        this.clientProject = clientProject;
     }
 
     public Long getId() {
@@ -60,12 +54,12 @@ public class WriterFile {
         this.filename = filename;
     }
 
-    public Project getProject() {
-        return project;
+    public ClientProject getClientProject() {
+        return clientProject;
     }
 
-    public void setProject(Project project) {
-        this.project = project;
+    public void setClientProject(ClientProject clientProject) {
+        this.clientProject = clientProject;
     }
 
     public Set<CommitData> getCommits() {

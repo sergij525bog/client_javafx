@@ -1,39 +1,36 @@
 package com.javafx.habr_spring.client.domain;
 
-import com.sun.istack.internal.NotNull;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "projects")
-public class Project {
+public class ClientProject {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
     @Column(name = "name")
     private String name;
 
     @ManyToMany(mappedBy = "projects")
-    private Set<User> users = new HashSet<>();
+    private Set<ClientUser> clientUsers = new HashSet<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<WriterFile> files = new HashSet<>();
 
-    public Project() {
+    public ClientProject() {
     }
 
-    public Project(String name, Set<User> users) {
+    public ClientProject(String name, Set<ClientUser> clientUsers) {
         this.name = name;
-        this.users = users;
+        this.clientUsers = clientUsers;
     }
 
-    public Project(String name, Set<User> users, Set<WriterFile> files) {
+    public ClientProject(String name, Set<ClientUser> clientUsers, Set<WriterFile> files) {
         this.name = name;
-        this.users = users;
+        this.clientUsers = clientUsers;
         this.files = files;
     }
 }

@@ -1,6 +1,6 @@
 package com.javafx.habr_spring.client.domain;
 
-public enum Roles {
+public enum ClientRoles {
     ADMIN,
     AUTHOR,
     CO_AUTHOR,

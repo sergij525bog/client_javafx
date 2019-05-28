@@ -1,28 +1,22 @@
 package com.javafx.habr_spring.client.domain;
 
-import com.sun.istack.internal.NotNull;
-import org.springframework.lang.NonNull;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "usr")
-public class User {
+public class ClientUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NonNull
     @Column(name = "username")
     private String username;
 
-    @NotNull
     @Column(name = "password")
     private String password;
 
-    @NonNull
     @Column(name = "active")
     private boolean active;
 
@@ -32,10 +26,10 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @ElementCollection(targetClass = Roles.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = ClientRoles.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Set<Roles> roles;
+    private Set<ClientRoles> roles;
 
     @ManyToMany(
             fetch = FetchType.EAGER,
@@ -46,27 +40,27 @@ public class User {
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "project_id")}
     )
-    private Set<Project> projects = new HashSet<>();
+    private Set<ClientProject> clientProjects = new HashSet<>();
 
-    public User() {
+    public ClientUser() {
     }
 
-    public User(String username, String password, boolean active, Set<Roles> roles, Set<Project> projects) {
+    public ClientUser(String username, String password, boolean active, Set<ClientRoles> roles, Set<ClientProject> clientProjects) {
         this.username = username;
         this.password = password;
         this.active = active;
         this.roles = roles;
-        this.projects = projects;
+        this.clientProjects = clientProjects;
     }
 
-    public User(String username, String password, boolean active, String activationCode, String email, Set<Roles> roles, Set<Project> projects) {
+    public ClientUser(String username, String password, boolean active, String activationCode, String email, Set<ClientRoles> roles, Set<ClientProject> clientProjects) {
         this.username = username;
         this.password = password;
         this.active = active;
         this.activationCode = activationCode;
         this.email = email;
         this.roles = roles;
-        this.projects = projects;
+        this.clientProjects = clientProjects;
     }
 
     public Long getId() {
@@ -117,19 +111,19 @@ public class User {
         this.email = email;
     }
 
-    public Set<Roles> getRoles() {
+    public Set<ClientRoles> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Roles> roles) {
+    public void setRoles(Set<ClientRoles> roles) {
         this.roles = roles;
     }
 
-    public Set<Project> getProjects() {
-        return projects;
+    public Set<ClientProject> getClientProjects() {
+        return clientProjects;
     }
 
-    public void setProjects(Set<Project> projects) {
-        this.projects = projects;
+    public void setClientProjects(Set<ClientProject> clientProjects) {
+        this.clientProjects = clientProjects;
     }
 }

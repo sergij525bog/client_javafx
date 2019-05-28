@@ -1,7 +1,5 @@
 package com.javafx.habr_spring.server.domain;
 
-import com.sun.istack.internal.NotNull;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,23 +11,19 @@ public class ServerFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @Column(name = "filename")
     private String filename;
 
-    @NotNull
     @Lob
     @Column(name = "filedata", columnDefinition="OID")
     private byte[] filedata;
 
-    @NotNull
     @Column(name = "filesize")
     private Long filesize;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
-    private Project project;
+    private ServerProject serverProject;
 
     @OneToMany(mappedBy = "commit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<PushData> commits = new HashSet<>();
@@ -37,11 +31,11 @@ public class ServerFile {
     public ServerFile() {
     }
 
-    public ServerFile(String filename, byte[] filedata, Long filesize, Project project) {
+    public ServerFile(String filename, byte[] filedata, Long filesize, ServerProject serverProject) {
         this.filename = filename;
         this.filedata = filedata;
         this.filesize = filesize;
-        this.project = project;
+        this.serverProject = serverProject;
     }
 
     public Long getId() {
@@ -60,12 +54,12 @@ public class ServerFile {
         this.filename = filename;
     }
 
-    public Project getProject() {
-        return project;
+    public ServerProject getServerProject() {
+        return serverProject;
     }
 
-    public void setProject(Project project) {
-        this.project = project;
+    public void setServerProject(ServerProject serverProject) {
+        this.serverProject = serverProject;
     }
 
     public Set<PushData> getCommits() {

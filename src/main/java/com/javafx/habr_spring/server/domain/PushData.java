@@ -1,7 +1,5 @@
 package com.javafx.habr_spring.server.domain;
 
-import com.sun.istack.internal.NotNull;
-
 import javax.persistence.*;
 import java.util.Date;
 
@@ -12,7 +10,6 @@ public class PushData {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
     @Lob
     @Column(name = "filedata")
     private byte[] filedata;
@@ -20,7 +17,6 @@ public class PushData {
     @Column(name = "filesize")
     private Long filesize;
 
-    @NotNull
     @Column(name = "commitDate")
     private Date commitDate;
 
