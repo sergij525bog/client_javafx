@@ -1,9 +1,9 @@
 package com.javafx.habr_spring.service;
 
-import com.javafx.habr_spring.domain.CommitData;
-import com.javafx.habr_spring.domain.WriterFile;
-import com.javafx.habr_spring.repository.CommitRepository;
-import com.javafx.habr_spring.repository.FileRepository;
+import com.javafx.habr_spring.client.domain.CommitData;
+import com.javafx.habr_spring.client.domain.WriterFile;
+import com.javafx.habr_spring.client.repository.CommitRepository;
+import com.javafx.habr_spring.client.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

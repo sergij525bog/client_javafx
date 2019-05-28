@@ -1,7 +1,7 @@
 package com.javafx.habr_spring.gui;
 
-import com.javafx.habr_spring.domain.CommitData;
-import com.javafx.habr_spring.domain.WriterFile;
+import com.javafx.habr_spring.client.domain.CommitData;
+import com.javafx.habr_spring.client.domain.WriterFile;
 import com.javafx.habr_spring.model.FileModel;
 import com.javafx.habr_spring.model.OpenFileType;
 import com.javafx.habr_spring.service.CommitService;
@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;

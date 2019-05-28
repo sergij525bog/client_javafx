@@ -1,9 +1,8 @@
-package com.javafx.habr_spring.domain;
+package com.javafx.habr_spring.client.domain;
 
 import com.sun.istack.internal.NotNull;
 
 import javax.persistence.*;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 

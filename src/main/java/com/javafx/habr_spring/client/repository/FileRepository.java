@@ -1,6 +1,6 @@
-package com.javafx.habr_spring.repository;
+package com.javafx.habr_spring.client.repository;
 
-import com.javafx.habr_spring.domain.WriterFile;
+import com.javafx.habr_spring.client.domain.WriterFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

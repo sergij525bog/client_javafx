@@ -1,6 +1,6 @@
-package com.javafx.habr_spring.repository;
+package com.javafx.habr_spring.client.repository;
 
-import com.javafx.habr_spring.domain.CommitData;
+import com.javafx.habr_spring.client.domain.CommitData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
