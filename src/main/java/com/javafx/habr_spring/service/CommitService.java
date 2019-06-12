@@ -2,6 +2,7 @@ package com.javafx.habr_spring.service;
 
 
 import com.javafx.habr_spring.model.client.ClientFile;
+import com.javafx.habr_spring.model.client.ClientProject;
 import com.javafx.habr_spring.model.client.Commit;
 import com.javafx.habr_spring.repository.client.ClientFileRepository;
 import com.javafx.habr_spring.repository.client.CommitRepository;
@@ -61,8 +62,8 @@ public class CommitService {
         return unsavedFiles;
     }
 
-    public ArrayList<ClientFile> loadFiles(Date commitDate, ClientFile... files) {
-        ArrayList<ClientFile> fileList = new ArrayList<>();
+    /*public ArrayList<ClientFile> loadFiles(Date commitDate, Long projectId, ClientFile... files) {
+        ArrayList<ClientFile> fileList = fileRepository.findByProject(projectId);
         Commit commit = new Commit();
         ClientFile file = new ClientFile();
         for (ClientFile fileFromDb : files) {
@@ -74,5 +75,15 @@ public class CommitService {
            fileList.add(file);
         }
         return fileList;
+    }*/
+
+    public ArrayList<Commit> loadCommits(Long projectId) {
+        ArrayList<ClientFile> clientFiles = fileRepository.findByProject(projectId);
+        ArrayList<Commit> commits = new ArrayList<>();
+        for(int i = 0; i < clientFiles.size(); i++) {
+            commits.addAll(commitRepository.findByCurrentFile(clientFiles.get(i).getId()));
+            System.out.println(clientFiles.get(i).getFilename());
+        }
+        return commits;
     }
 }

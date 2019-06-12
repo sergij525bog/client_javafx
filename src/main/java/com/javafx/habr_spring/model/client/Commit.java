@@ -7,7 +7,7 @@ import java.util.Date;
 @Table(name = "commit_data")
 public class Commit {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Lob

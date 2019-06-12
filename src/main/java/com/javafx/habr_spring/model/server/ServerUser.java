@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "usr")
 public class ServerUser implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "username")

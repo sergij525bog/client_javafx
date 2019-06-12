@@ -7,10 +7,14 @@ import com.javafx.habr_spring.model.client.ClientFile;
 import com.javafx.habr_spring.model.client.Commit;
 import com.javafx.habr_spring.service.CommitService;
 import com.javafx.habr_spring.service.PullService;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.scene.web.HTMLEditor;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -218,20 +222,28 @@ public class MenuController {
 
     @FXML
     private Commit loadFile() {
-        Label secondLabel = new Label("I'm a Label on new Window");
-        TextField field = new TextField();
+        Stage newWindow = new Stage();
         Button click = new Button("OK");
+        commitService.loadCommits(1L);
+        ObservableList<String> versions = FXCollections.observableArrayList("Java", "JavaScript", "C#", "Python");
+        ChoiceBox<String> langsChoiceBox = new ChoiceBox<String>(versions);
+        langsChoiceBox.setValue("Java");
+
+        Label lbl = new Label();
+        langsChoiceBox.setOnAction(event -> lbl.setText(langsChoiceBox.getValue()));
+
         click.setOnAction(e -> {
-            System.out.println("Field return " + field.getText());
+            System.out.println("Field return " + langsChoiceBox.getValue());
+            newWindow.close();
         });
         StackPane secondaryLayout = new StackPane();
-        secondaryLayout.getChildren().addAll(secondLabel, field, click);
+        secondaryLayout.getChildren().addAll(langsChoiceBox, lbl, click);
 
         Scene secondScene = new Scene(secondaryLayout, 230, 100);
 
-        // New window (Stage)
-        Stage newWindow = new Stage();
-        newWindow.setTitle("Second Stage");
+
+
+        newWindow.setTitle("Список версій файлу");
         newWindow.setScene(secondScene);
 
         // Specifies the modality for new window.
@@ -241,9 +253,9 @@ public class MenuController {
         newWindow.initOwner(window);
 
         // Set position of second window, related to primary window.
-        newWindow.setX(300);
-        newWindow.setY(200);
-
+        newWindow.setHeight(500);
+        newWindow.setWidth(400);
+        newWindow.centerOnScreen();
         newWindow.show();
 
         //commitService.loadFiles();

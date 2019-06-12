@@ -7,7 +7,7 @@ import java.util.Date;
 @Table(name = "push_data")
 public class Push {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Lob
