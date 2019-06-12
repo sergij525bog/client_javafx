@@ -32,13 +32,13 @@ public class CommitService {
     }
 
     public void commitFiles(ArrayList<ClientFile> files, String commitDescription) {
-        fileRepository.saveAll(files);
         ArrayList<Commit> commits = new ArrayList<>();
         Commit commit = new Commit();
         for (int i = 0; i < files.size(); i++) {
-            commit.setCurrentFile(fileRepository.findByFilename(files.get(i).getFilename()));
+            ClientFile byFilename = fileRepository.findByFilename(files.get(i).getFilename());
+            commit.setCurrentFile(byFilename);
             commit.setFiledata(files.get(i).getFiledata());
-            commit.setFilesize(files.get(i).getFilesize());
+            commit.setFilesize((long) files.get(i).getFiledata().length);
             commit.setCommitDate(new Date());
             commit.setDescription(commitDescription + i);
             commits.add(commit);
@@ -51,11 +51,14 @@ public class CommitService {
         for (ClientFile file : files) {
             ClientFile f = fileRepository.findByFilename(file.getFilename());
             if (f != null) {
-                byte[] filedata = fileRepository.findByFilename(file.getFilename()).getFiledata();
+                byte[] filedata = f.getFiledata();
                 if(!Arrays.equals(file.getFiledata(), filedata)) {
+                    f.setFiledata(file.getFiledata());
+                    fileRepository.save(f);
                     unsavedFiles.add(file);
                 }
             } else {
+                fileRepository.save(file);
                 unsavedFiles.add(file);
             }
         }
