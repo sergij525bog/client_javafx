@@ -1,26 +1,22 @@
-package com.javafx.habr_spring.domain;
-
-import com.sun.istack.internal.NotNull;
+package com.javafx.habr_spring.model.client;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "commit_data")
-public class CommitData {
+public class Commit {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @Lob
-    @Column(name = "filedata")
+    @Column(name = "filedata", columnDefinition = "OID")
     private byte[] filedata;
 
     @Column(name = "filesize")
     private Long filesize;
 
-    @NotNull
     @Column(name = "commitDate")
     private Date commitDate;
 
@@ -29,17 +25,17 @@ public class CommitData {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "file_id")
-    private WriterFile commit;
+    private ClientFile currentFile;
 
-    public CommitData() {
+    public Commit() {
     }
 
-    public CommitData(byte[] filedata, Long filesize, Date commitDate, String description, WriterFile commit) {
+    public Commit(byte[] filedata, Long filesize, Date commitDate, String description, ClientFile currentFile) {
         this.filedata = filedata;
         this.filesize = filesize;
         this.commitDate = commitDate;
         this.description = description;
-        this.commit = commit;
+        this.currentFile = currentFile;
     }
 
     public Long getId() {
@@ -58,6 +54,14 @@ public class CommitData {
         this.filedata = filedata;
     }
 
+    public Long getFilesize() {
+        return filesize;
+    }
+
+    public void setFilesize(Long filesize) {
+        this.filesize = filesize;
+    }
+
     public Date getCommitDate() {
         return commitDate;
     }
@@ -74,19 +78,11 @@ public class CommitData {
         this.description = description;
     }
 
-    public WriterFile getCommit() {
-        return commit;
+    public ClientFile getCurrentFile() {
+        return currentFile;
     }
 
-    public void setCommit(WriterFile commit) {
-        this.commit = commit;
-    }
-
-    public Long getFilesize() {
-        return filesize;
-    }
-
-    public void setFilesize(Long filesize) {
-        this.filesize = filesize;
+    public void setCurrentFile(ClientFile currentFile) {
+        this.currentFile = currentFile;
     }
 }

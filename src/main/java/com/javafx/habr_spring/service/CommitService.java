@@ -1,9 +1,10 @@
 package com.javafx.habr_spring.service;
 
-import com.javafx.habr_spring.domain.CommitData;
-import com.javafx.habr_spring.domain.WriterFile;
-import com.javafx.habr_spring.repository.CommitRepository;
-import com.javafx.habr_spring.repository.FileRepository;
+
+import com.javafx.habr_spring.model.client.ClientFile;
+import com.javafx.habr_spring.model.client.Commit;
+import com.javafx.habr_spring.repository.client.ClientFileRepository;
+import com.javafx.habr_spring.repository.client.CommitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,28 +14,28 @@ import java.util.Date;
 
 @Service
 public class CommitService {
-    private final FileRepository fileRepository;
+    private final ClientFileRepository fileRepository;
     private final CommitRepository commitRepository;
 
     @Autowired
-    public CommitService(FileRepository fileRepository, CommitRepository commitRepository) {
+    public CommitService(ClientFileRepository fileRepository, CommitRepository commitRepository) {
         this.fileRepository = fileRepository;
         this.commitRepository = commitRepository;
     }
 
-    public void commitFile(WriterFile file, CommitData commit) {
+    public void commitFile(ClientFile file, Commit commit) {
         if(!fileRepository.findByFilename(file.getFilename()).equals(file)) {
             fileRepository.save(file);
             commitRepository.save(commit);
         }
     }
 
-    public void commitFiles(ArrayList<WriterFile> files, String commitDescription) {
+    public void commitFiles(ArrayList<ClientFile> files, String commitDescription) {
         fileRepository.saveAll(files);
-        ArrayList<CommitData> commits = new ArrayList<>();
-        CommitData commit = new CommitData();
+        ArrayList<Commit> commits = new ArrayList<>();
+        Commit commit = new Commit();
         for (int i = 0; i < files.size(); i++) {
-            commit.setCommit(fileRepository.findByFilename(files.get(i).getFilename()));
+            commit.setCurrentFile(fileRepository.findByFilename(files.get(i).getFilename()));
             commit.setFiledata(files.get(i).getFiledata());
             commit.setFilesize(files.get(i).getFilesize());
             commit.setCommitDate(new Date());
@@ -44,10 +45,10 @@ public class CommitService {
         commitRepository.saveAll(commits);
     }
 
-    public ArrayList<WriterFile> checkFilesOnChanges(WriterFile... files) {
-        ArrayList<WriterFile> unsavedFiles = new ArrayList<>();
-        for (WriterFile file : files) {
-            WriterFile f = fileRepository.findByFilename(file.getFilename());
+    public ArrayList<ClientFile> checkFilesOnChanges(ClientFile... files) {
+        ArrayList<ClientFile> unsavedFiles = new ArrayList<>();
+        for (ClientFile file : files) {
+            ClientFile f = fileRepository.findByFilename(file.getFilename());
             if (f != null) {
                 byte[] filedata = fileRepository.findByFilename(file.getFilename()).getFiledata();
                 if(!Arrays.equals(file.getFiledata(), filedata)) {
@@ -60,13 +61,13 @@ public class CommitService {
         return unsavedFiles;
     }
 
-    public ArrayList<WriterFile> loadFiles(Date commitDate, WriterFile... files) {
-        ArrayList<WriterFile> fileList = new ArrayList<>();
-        CommitData commit = new CommitData();
-        WriterFile file = new WriterFile();
-        for (WriterFile fileFromDb : files) {
-           commit = commitRepository.findByCommitAndCommitDate(fileFromDb.getId(), commitDate);
-           file = fileRepository.findById(commit.getCommit().getId()).get();
+    public ArrayList<ClientFile> loadFiles(Date commitDate, ClientFile... files) {
+        ArrayList<ClientFile> fileList = new ArrayList<>();
+        Commit commit = new Commit();
+        ClientFile file = new ClientFile();
+        for (ClientFile fileFromDb : files) {
+           commit = commitRepository.findByCurrentFileAndCommitDate(fileFromDb.getId(), commitDate);
+           file = fileRepository.findById(commit.getCurrentFile().getId()).get();
            file.setFiledata(commit.getFiledata());
            file.setFilesize(commit.getFilesize());
            fileRepository.save(file);

@@ -45,6 +45,10 @@ public class FileModel {
         StringBuilder homeProject = new StringBuilder();
         try {
             File file = new File((System.getProperty("user.home") + "/all_projects.txt"));
+            String[] list = file.list();
+            for (String s : list != null ? list : new String[0]) {
+                System.out.println(s);
+            }
             FileReader reader = new FileReader(file);
             Scanner scanner = new Scanner(reader);
             while (scanner.hasNext()) {

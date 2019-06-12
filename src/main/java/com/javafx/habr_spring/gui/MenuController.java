@@ -1,15 +1,19 @@
 package com.javafx.habr_spring.gui;
 
-import com.javafx.habr_spring.domain.CommitData;
-import com.javafx.habr_spring.domain.WriterFile;
+
 import com.javafx.habr_spring.model.FileModel;
 import com.javafx.habr_spring.model.OpenFileType;
+import com.javafx.habr_spring.model.client.ClientFile;
+import com.javafx.habr_spring.model.client.Commit;
 import com.javafx.habr_spring.service.CommitService;
 import com.javafx.habr_spring.service.PullService;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,12 +22,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class MenuController {
@@ -99,6 +104,7 @@ public class MenuController {
 
     private TreeItem<Object> getLeafs(Path subPath) {
         String strPath = subPath.toString();
+        System.out.println("leaf " + strPath);
         TreeItem<Object> leafs = new TreeItem<>(strPath.substring(1 + strPath.lastIndexOf(File.separator)));
         return leafs;
     }
@@ -107,10 +113,14 @@ public class MenuController {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(subPath.toString()))) {
             for(Path subDir: directoryStream) {
                 // explicit search for files because we dont want to get sub-sub-directories
+                String subTree = subDir.toString();
                 if (!Files.isDirectory(subDir)) {
-                    String subTree = subDir.toString();
+
+                    System.out.println("subLeaf" + subTree);
                     TreeItem<Object> subLeafs = new TreeItem<>(subTree.substring(1 + subTree.lastIndexOf(File.separator)));
                     parent.getChildren().add(subLeafs);
+                } else {
+                    System.out.println("directory " + subTree);
                 }
             }
         } catch (IOException e) {
@@ -184,26 +194,60 @@ public class MenuController {
 
     @FXML
     private void commitFile(){
-        WriterFile file = new WriterFile();
+        ClientFile file = new ClientFile();
         file.setFilename(MenuController.file.getName());
         file.setFilesize(MenuController.file.length());
         file.setFiledata(area.getText().getBytes());
-        ArrayList<WriterFile> filesToCommit = commitService.checkFilesOnChanges(file);
-        if(!filesToCommit.isEmpty()) {
-            commitService.commitFiles(filesToCommit, descriptionField.getText());
+        ArrayList<ClientFile> filesToCommit = commitService.checkFilesOnChanges(file);
+        if(filesToCommit != null && !filesToCommit.isEmpty()) {
+            commitService.commitFiles(filesToCommit, /*descriptionField.getText()*/ "Some description");
         }
     }
 
     @FXML
-    private void pushFile(){
+    private void pushFile() {
 
     }
 
     @FXML
-    private void pullFile(){
+    private void pullFile() {
         /*Optional<WriterFile> optionalFileModel = pullService.pullFile(1L);
         WriterFile writerFile = optionalFileModel.get();
         System.out.println(writerFile.getFilename());*/
+    }
+
+    @FXML
+    private Commit loadFile() {
+        Label secondLabel = new Label("I'm a Label on new Window");
+        TextField field = new TextField();
+        Button click = new Button("OK");
+        click.setOnAction(e -> {
+            System.out.println("Field return " + field.getText());
+        });
+        StackPane secondaryLayout = new StackPane();
+        secondaryLayout.getChildren().addAll(secondLabel, field, click);
+
+        Scene secondScene = new Scene(secondaryLayout, 230, 100);
+
+        // New window (Stage)
+        Stage newWindow = new Stage();
+        newWindow.setTitle("Second Stage");
+        newWindow.setScene(secondScene);
+
+        // Specifies the modality for new window.
+        newWindow.initModality(Modality.WINDOW_MODAL);
+
+        // Specifies the owner Window (parent) for new window
+        newWindow.initOwner(window);
+
+        // Set position of second window, related to primary window.
+        newWindow.setX(300);
+        newWindow.setY(200);
+
+        newWindow.show();
+
+        //commitService.loadFiles();
+        return null;
     }
 
     private void printLog(TextArea area, File file){
