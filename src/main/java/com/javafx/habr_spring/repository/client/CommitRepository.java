@@ -1,5 +1,6 @@
 package com.javafx.habr_spring.repository.client;
 
+import com.javafx.habr_spring.model.client.ClientFile;
 import com.javafx.habr_spring.model.client.Commit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,5 +14,5 @@ import java.util.Date;
 public interface CommitRepository extends JpaRepository<Commit, Long> {
 
     //ArrayList<Commit> findByCurrentFileAndCommitDate(Long id, Date commitDate);
-    ArrayList<Commit> findByCurrentFile(Long id);
+    ArrayList<Commit> findByCurrentFile(ClientFile currentFile);
 }

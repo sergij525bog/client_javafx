@@ -221,10 +221,10 @@ public class MenuController {
     }
 
     @FXML
-    private Commit loadFile() {
+    private Commit loadCommits() {
         Stage newWindow = new Stage();
         Button click = new Button("OK");
-        commitService.loadCommits(1L);
+        commitService.loadCommits(commitService.findById(1L).getId());
         ObservableList<String> versions = FXCollections.observableArrayList("Java", "JavaScript", "C#", "Python");
         ChoiceBox<String> langsChoiceBox = new ChoiceBox<String>(versions);
         langsChoiceBox.setValue("Java");
@@ -240,8 +240,6 @@ public class MenuController {
         secondaryLayout.getChildren().addAll(langsChoiceBox, lbl, click);
 
         Scene secondScene = new Scene(secondaryLayout, 230, 100);
-
-
 
         newWindow.setTitle("Список версій файлу");
         newWindow.setScene(secondScene);
@@ -268,6 +266,7 @@ public class MenuController {
 
     @FXML
     public void aboutProgram() {
+
     }
 
     @FXML

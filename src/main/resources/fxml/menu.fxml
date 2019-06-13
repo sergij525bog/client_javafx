@@ -49,7 +49,7 @@
                 <Menu text="Версії">
                     <items>
                         <MenuItem onAction="#commitFile" text="Зберегти на комп'ютері" />
-                        <MenuItem onAction="#loadFile" text="Обрати версію..." />
+                        <MenuItem onAction="#loadCommits" text="Обрати версію..." />
                         <MenuItem onAction="#pushFile" text="Завантажити на сервер" />
                         <MenuItem onAction="#pullFile" text="Завантажити з сервера" />
                     </items>

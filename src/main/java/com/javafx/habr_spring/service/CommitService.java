@@ -5,6 +5,7 @@ import com.javafx.habr_spring.model.client.ClientFile;
 import com.javafx.habr_spring.model.client.ClientProject;
 import com.javafx.habr_spring.model.client.Commit;
 import com.javafx.habr_spring.repository.client.ClientFileRepository;
+import com.javafx.habr_spring.repository.client.ClientProjectRepository;
 import com.javafx.habr_spring.repository.client.CommitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,16 +13,24 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class CommitService {
     private final ClientFileRepository fileRepository;
     private final CommitRepository commitRepository;
+    private final ClientProjectRepository projectRepository;
 
     @Autowired
-    public CommitService(ClientFileRepository fileRepository, CommitRepository commitRepository) {
+    public CommitService(ClientFileRepository fileRepository, CommitRepository commitRepository, ClientProjectRepository projectRepository) {
         this.fileRepository = fileRepository;
         this.commitRepository = commitRepository;
+        this.projectRepository = projectRepository;
+    }
+
+    public ClientFile findById(Long id) {
+        Optional<ClientFile> file = fileRepository.findById(id);
+        return file.get();
     }
 
     public void commitFile(ClientFile file, Commit commit) {
@@ -81,11 +90,15 @@ public class CommitService {
     }*/
 
     public ArrayList<Commit> loadCommits(Long projectId) {
-        ArrayList<ClientFile> clientFiles = fileRepository.findByProject(projectId);
+        ClientProject project = projectRepository.findById(projectId).get();
+        ArrayList<ClientFile> clientFiles = fileRepository.findByProject(project);
         ArrayList<Commit> commits = new ArrayList<>();
         for(int i = 0; i < clientFiles.size(); i++) {
-            commits.addAll(commitRepository.findByCurrentFile(clientFiles.get(i).getId()));
-            System.out.println(clientFiles.get(i).getFilename());
+            commits.addAll(commitRepository.findByCurrentFile(clientFiles.get(i)));
+        }
+        System.out.println();
+        for(int i = 0; i < commits.size(); i++) {
+            System.out.println(commits.get(i).getCurrentFile().getFilename() + " - " + commits.get(i).getCommitDate());
         }
         return commits;
     }
