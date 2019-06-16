@@ -19,8 +19,8 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 
 @Configuration
-//@PropertySource({"classpath:persistence-multiple-db-boot.properties"})
-@PropertySource({"classpath:application.properties"})
+@PropertySource({"classpath:persistence-multiple-db-boot.properties"})
+//@PropertySource({"classpath:application.properties"})
 @EnableJpaRepositories(
         basePackages = "com.javafx.habr_spring.repository.client",
         entityManagerFactoryRef = "clientEntityManager",

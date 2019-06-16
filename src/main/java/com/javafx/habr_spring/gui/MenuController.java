@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -224,10 +225,21 @@ public class MenuController {
     private Commit loadCommits() {
         Stage newWindow = new Stage();
         Button click = new Button("OK");
-        commitService.loadCommits(commitService.findById(1L).getId());
-        ObservableList<String> versions = FXCollections.observableArrayList("Java", "JavaScript", "C#", "Python");
-        ChoiceBox<String> langsChoiceBox = new ChoiceBox<String>(versions);
-        langsChoiceBox.setValue("Java");
+        ArrayList<Commit> commits = commitService.loadCommits(commitService.findById(1L).getId());
+        String[] filenames = new String[commits.size()];
+        String[] descriptions = new String[commits.size()];
+        Date[] dates = new Date[commits.size()];
+        String[] variants = new String[commits.size()];
+        for(int i = 0; i < commits.size(); i++) {
+            filenames[i] = commits.get(i).getCurrentFile().getFilename();
+            descriptions[i] = commits.get(i).getDescription();
+            dates[i] = commits.get(i).getCommitDate();
+            variants[i] = filenames[i] + " | " + descriptions[i] + " | " + dates[i];
+            System.out.println(variants[i]);
+        }
+        ObservableList<String> versions = FXCollections.observableArrayList(variants);
+        ChoiceBox<String> langsChoiceBox = new ChoiceBox<>(versions);
+        langsChoiceBox.setValue(variants[variants.length - 1]);
 
         Label lbl = new Label();
         langsChoiceBox.setOnAction(event -> lbl.setText(langsChoiceBox.getValue()));

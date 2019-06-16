@@ -33,11 +33,13 @@ public class CommitService {
         return file.get();
     }
 
-    public void commitFile(ClientFile file, Commit commit) {
+    public boolean commitFile(ClientFile file, Commit commit) {
         if(!fileRepository.findByFilename(file.getFilename()).equals(file)) {
             fileRepository.save(file);
             commitRepository.save(commit);
+            return true;
         }
+        return false;
     }
 
     public void commitFiles(ArrayList<ClientFile> files, String commitDescription) {
@@ -97,9 +99,9 @@ public class CommitService {
             commits.addAll(commitRepository.findByCurrentFile(clientFiles.get(i)));
         }
         System.out.println();
-        for(int i = 0; i < commits.size(); i++) {
+        /*for(int i = 0; i < commits.size(); i++) {
             System.out.println(commits.get(i).getCurrentFile().getFilename() + " - " + commits.get(i).getCommitDate());
-        }
+        }*/
         return commits;
     }
 }
