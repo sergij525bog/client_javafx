@@ -10,17 +10,18 @@ import com.javafx.habr_spring.service.PullService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.web.HTMLEditor;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -28,13 +29,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Scanner;
 
 @SuppressWarnings("SpringJavaAutowiringInspection")
@@ -64,9 +63,13 @@ public class MenuController {
     private final FileChooser fileChooser = new FileChooser();
     private final DirectoryChooser directoryChooser = new DirectoryChooser();
     private static File file;
+
+    private ArrayList<File> projectFiles = new ArrayList<>();
     private static File directory;
     private String filename;
     private FileModel fileModel = new FileModel(fileChooser, directoryChooser);
+
+    private TreeItem<File> currentItem;
 
     @FXML
     public void initialize() {
@@ -77,22 +80,180 @@ public class MenuController {
     @PostConstruct
     public void init() {
         menuBar = new MenuBar();
-        setFileTree("/home/sbogdan/IdeaProjects/aws");
+        setFileTree("/home/sbogdan/Документи");
+        //checkBoxTree("/home/sbogdan/IdeaProjects/aws");
     }
 
     private void setFileTree(String path) {
-        filesTree.setRoot(createTree(new File(path)));
-        filesTree.setCellFactory(event -> new TreeCell<File>(){
+        TreeItem<File> root = createTree(new File(path));
+        root.setExpanded(true);
+        filesTree.setRoot(root);
+        filesTree.setCellFactory(new Callback<TreeView<File>,TreeCell<File>>(){
             @Override
-            protected void updateItem(File item, boolean empty) {
-                super.updateItem(item, empty);
-                if(item != null) {
-                    setText(item.getName());
-                } else {
-                    setText("");
-                }
+            public TreeCell<File> call(TreeView<File> p) {
+                TreeCell<File> cell = new TreeCell<File>() {
+                    @Override
+                    protected void updateItem(File file, boolean empty) {
+                        super.updateItem(file, empty);
+                        if (empty) {
+                            setText(null);
+                        } else {
+                            setText(file.getName());
+                        }
+                    }
+                };
+                ContextMenu cm = createContextMenu(cell);
+                cell.setContextMenu(cm);
+                return cell;
             }
         });
+    }
+
+    private void modalRename (TreeCell<File> selectedCell, boolean isFile) {
+        Stage stage = new Stage();
+        if(isFile) {
+            stage.setTitle("Перейменувати файл");
+        } else {
+            stage.setTitle("Перейменувати папку");
+        }
+
+        Label nameLabel = new Label("Введіть нову назву");
+        TextField newName = new TextField();
+        Button okButton = new Button("Ок");
+        Button cancelButton = new Button("Відмінити");
+        okButton.setOnAction(event -> {
+            if(!newName.getText().isEmpty()) {
+                if(!isFile) {
+                    if (newName.getText().contains(".")) {
+                        errorWindow(stage, "Назва папки може складатися тільки з букв і цифр!");
+                    } else {
+                        renameFile(selectedCell, stage, newName);
+                    }
+                } else {
+                    if (newName.getText().contains("&")) {
+                        errorWindow(stage, "Назва файлу може складатися тільки з букв, крапки і цифр!");
+                    } else {
+                        renameFile(selectedCell, stage, newName);
+                    }
+                }
+            } else {
+                errorWindow(stage, "Ви не ввели нове ім'я!");
+            }
+        });
+
+        cancelButton.setOnAction(event -> {
+            stage.close();
+        });
+
+        GridPane pane = new GridPane();
+        pane.add(nameLabel, 1, 1);
+        pane.add(newName, 2, 1);
+        pane.add(okButton, 3,3);
+        pane.add(cancelButton, 4,3);
+
+        Scene scene = new Scene(pane, 300, 200);
+        stage.setScene(scene);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(window);
+        stage.show();
+    }
+
+    private void modalDelete (TreeCell<File> selectedCell, boolean isFile) {
+        Stage stage = new Stage();
+        if(isFile) {
+            stage.setTitle("Видалити файл");
+        } else {
+            stage.setTitle("Видалити папку");
+        }
+
+        File fileToDelete = selectedCell.getTreeItem().getValue();
+        Label question;
+        question = new Label("Ви дійсно бажаєте видалити " + fileToDelete.getName() + " ?");
+        if (fileToDelete.isDirectory()) {
+            File[] files = fileToDelete.listFiles();
+            if(files != null) {
+
+            }
+        }
+        Button okButton = new Button("Ок");
+        Button cancelButton = new Button("Відмінити");
+        okButton.setOnAction(event -> {
+            boolean deleted = fileToDelete.delete();
+            stage.close();
+        });
+
+        cancelButton.setOnAction(event -> {
+            stage.close();
+        });
+
+        GridPane pane = new GridPane();
+        pane.add(question, 1, 1);
+        pane.add(okButton, 3,3);
+        pane.add(cancelButton, 4,3);
+
+        Scene scene = new Scene(pane, 600, 400);
+        stage.setScene(scene);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(window);
+        stage.show();
+    }
+
+    private void renameFile(TreeCell<File> selectedCell, Stage stage, TextField newName) {
+        File oldFile = selectedCell.getItem();
+        Path source = Paths.get(oldFile.getPath());
+        try {
+            selectedCell.setText(newName.getText());
+            Files.move(source, source.resolveSibling(newName.getText()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        stage.close();
+    }
+
+    private ContextMenu createContextMenu(TreeCell<File> cell) {
+        ContextMenu cm = new ContextMenu();
+        MenuItem rename = new MenuItem("Перейменувати");
+        MenuItem delete = new MenuItem("Видалити");
+        rename.setOnAction(event -> {
+            File file = cell.getItem();
+            if (file != null) {
+                modalRename(cell,true);
+            }
+        });
+
+        delete.setOnAction(event -> {
+            File file = cell.getItem();
+            if (file != null) {
+                modalDelete(cell, true);
+            }
+        });
+
+        cm.getItems().addAll(rename, delete);
+        return cm;
+    }
+
+    private TreeView<File> checkBoxTree(String path) {
+        TreeView<File> checkedFiles = new TreeView<>();
+        StringConverter<TreeItem<File>> converter = new StringConverter<TreeItem<File>>() {
+            @Override
+            public String toString(TreeItem<File> object) {
+                return object.getValue().getName();
+            }
+
+            @Override
+            public TreeItem<File> fromString(String string) {
+                return null;
+            }
+        };
+
+        TreeItem<File> root = createTree(new File(path));
+        checkedFiles.setRoot(root);
+        checkedFiles.setCellFactory((Callback<TreeView<File>, TreeCell<File>>) p -> {
+            CheckBoxTreeCell<File> cell = new CheckBoxTreeCell<>();
+            cell.setConverter(converter);
+            return cell;
+        });
+        return checkedFiles;
     }
 
     @FXML
@@ -106,7 +267,10 @@ public class MenuController {
         File[] childs = file.listFiles();
         if (childs != null) {
             for (File child : childs) {
-                item.getChildren().add(createTree(child));
+                if(!child.isHidden()) {
+                    item.getChildren().add(createTree(child));
+                    projectFiles.add(child);
+                }
             }
         }
         return item;
@@ -189,11 +353,11 @@ public class MenuController {
                 commitService.commitFiles(filesToCommit, /*descriptionField.getText()*/ "Some description");
             }
         } else {
-            errorWindow("Жодного файлу не вибрано!");
+            errorWindow(window,"Жодного файлу не вибрано!");
         }
     }
 
-    private void errorWindow(String error) {
+    private void errorWindow(Stage owner, String error) {
         Stage stage = new Stage();
         stage.setTitle("Помилка!!!");
 
@@ -210,7 +374,7 @@ public class MenuController {
         Scene scene = new Scene(pane, 300, 200);
         stage.setScene(scene);
         stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(window);
+        stage.initOwner(owner);
         stage.show();
     }
 
@@ -389,7 +553,7 @@ public class MenuController {
 
     @FXML
     public void renameFile() {
-
+        file.renameTo(new File("kdg"));
     }
 
     @FXML
@@ -402,33 +566,5 @@ public class MenuController {
 
     }
 
-    private void modalRenameDelete (String title, boolean task) {
-        Stage stage = new Stage();
-        stage.setTitle(title);
 
-        Label errorLabel = new Label("Введіть нову назву");
-        TextField newName = new TextField();
-        Button okButton = new Button("Ок");
-        Button cancelButton = new Button("Відмінити");
-        okButton.setOnAction(event -> {
-            /*if (task) {
-                fileModel.renameFile(newName.getText());
-            } else {
-                fileModel.deleteFile();
-            }*/
-            stage.close();
-        });
-
-        cancelButton.setOnAction(event -> {
-            stage.close();
-        });
-
-        GridPane pane = new GridPane();
-
-        Scene scene = new Scene(pane, 300, 200);
-        stage.setScene(scene);
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(window);
-        stage.show();
-    }
 }
