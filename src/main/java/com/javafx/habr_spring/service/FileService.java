@@ -1,5 +1,6 @@
-package com.javafx.habr_spring.model;
+package com.javafx.habr_spring.service;
 
+import com.javafx.habr_spring.model.OpenFileType;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -9,14 +10,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class FileModel {
+public class FileService {
     private final FileChooser fileChooser;
     private final DirectoryChooser directoryChooser;
     private static File file;
     private static File directory;
     private String filename;
 
-    public FileModel(FileChooser fileChooser, DirectoryChooser directoryChooser) {
+    public FileService(FileChooser fileChooser, DirectoryChooser directoryChooser) {
         this.fileChooser = fileChooser;
         this.fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         this.fileChooser.getExtensionFilters().addAll(
@@ -76,7 +77,21 @@ public class FileModel {
 
     }
 
-    public void createFile(boolean isFile) {
-
+    public boolean createFile(String filename, boolean isFile) {
+        File newFile = new File(filename);
+        if (isFile) {
+            if (!newFile.exists()) {
+                try {
+                    return newFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            if(!newFile.exists()) {
+                return newFile.mkdir();
+            }
+        }
+        return false;
     }
 }

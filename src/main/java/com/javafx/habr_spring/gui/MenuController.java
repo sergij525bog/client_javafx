@@ -1,12 +1,13 @@
 package com.javafx.habr_spring.gui;
 
 
-import com.javafx.habr_spring.model.FileModel;
+import com.javafx.habr_spring.service.FileService;
 import com.javafx.habr_spring.model.OpenFileType;
 import com.javafx.habr_spring.model.client.ClientFile;
 import com.javafx.habr_spring.model.client.Commit;
 import com.javafx.habr_spring.service.CommitService;
 import com.javafx.habr_spring.service.PullService;
+import com.javafx.habr_spring.service.PushService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -40,8 +41,12 @@ import java.util.Scanner;
 public class MenuController {
     @Autowired
     private CommitService commitService;
+
     @Autowired
     private PullService pullService;
+
+    @Autowired
+    private PushService pushService;
 
     @FXML
     private TextArea area;
@@ -67,7 +72,7 @@ public class MenuController {
     private ArrayList<File> projectFiles = new ArrayList<>();
     private static File directory;
     private String filename;
-    private FileModel fileModel = new FileModel(fileChooser, directoryChooser);
+    private FileService fileService = new FileService(fileChooser, directoryChooser);
 
     private TreeItem<File> currentItem;
 
@@ -212,8 +217,27 @@ public class MenuController {
 
     private ContextMenu createContextMenu(TreeCell<File> cell) {
         ContextMenu cm = new ContextMenu();
+        Menu create = new Menu("Створити...");
+        MenuItem createFile = new MenuItem("Файл");
+        MenuItem createDirectory = new MenuItem("Папку");
+        create.getItems().addAll(createFile, createDirectory);
+
+        MenuItem open = new MenuItem("Відкрити файл");
         MenuItem rename = new MenuItem("Перейменувати");
         MenuItem delete = new MenuItem("Видалити");
+
+        createFile.setOnAction(event -> {
+            createFile(cell);
+        });
+
+        createDirectory.setOnAction(event -> {
+            createDirectory(cell);
+        });
+
+        open.setOnAction(event -> {
+            openFile();
+        });
+
         rename.setOnAction(event -> {
             File file = cell.getItem();
             if (file != null) {
@@ -228,7 +252,7 @@ public class MenuController {
             }
         });
 
-        cm.getItems().addAll(rename, delete);
+        cm.getItems().addAll(create, open, rename, delete);
         return cm;
     }
 
@@ -258,8 +282,10 @@ public class MenuController {
 
     @FXML
     public void openProject() {
-        directory = fileModel.open(OpenFileType.PROJECT, window);
-        setFileTree(directory.getAbsolutePath());
+        directory = fileService.open(OpenFileType.PROJECT, window);
+        if (directory != null) {
+            setFileTree(directory.getAbsolutePath());
+        }
     }
 
     private TreeItem<File> createTree(File file) {
@@ -276,11 +302,9 @@ public class MenuController {
         return item;
     }
 
-
-    @FXML
     private void openFile(){
         try {
-            file = fileModel.open(OpenFileType.FILE, window);
+            file = fileService.open(OpenFileType.FILE, window);
             if(file != null) {
                 FileReader reader = new FileReader(file);
                 Scanner scanner = new Scanner(reader);
@@ -380,7 +404,8 @@ public class MenuController {
 
     @FXML
     private void pushFile() {
-
+        pushService.pushFiles();
+        System.out.println("Push must be ends good");
     }
 
     @FXML
@@ -447,9 +472,13 @@ public class MenuController {
 
     }
 
-    private void modalCreate(String title, boolean isFile) {
+    private void modalCreate(TreeCell<File> cell, boolean isFile) {
         Stage createWindow = new Stage();
-        createWindow.setTitle(title);
+        if (isFile) {
+            createWindow.setTitle("Створити файл");
+        } else {
+            createWindow.setTitle("Створити папку");
+        }
 
         Button okButton = new Button("Ок");
         Button cancelButton = new Button("Відмінити");
@@ -470,7 +499,18 @@ public class MenuController {
         }
 
         okButton.setOnAction(event -> {
-            fileModel.createFile(fileType.getValue() == types.get(0));
+            File selectedFile = cell.getTreeItem().getValue();
+            String path = selectedFile.isDirectory() ? selectedFile.getPath() : cell.getTreeItem().getValue().getParent();
+            if (!fileService.createFile( path + "/" + filename.getText(), fileType.getValue() == types.get(0))) {
+                String errorMessage;
+                if (fileType.getValue() == types.get(0)) {
+                    errorMessage = "Не вдалося створити файл!";
+                } else {
+                    errorMessage = "Не вдалося створити папку!";
+                }
+                errorWindow(createWindow, errorMessage);
+            }
+            setFileTree("/home/sbogdan/Документи");
             createWindow.close();
         });
 
@@ -513,7 +553,7 @@ public class MenuController {
         CheckBox editorBranch = new CheckBox("Частина редактора");
 
         okButton.setOnAction(event -> {
-            fileModel.createProject(name.getText(), path.getText(), mainBranch.isSelected(), writerBranch.isSelected(), editorBranch.isSelected());
+            fileService.createProject(name.getText(), path.getText(), mainBranch.isSelected(), writerBranch.isSelected(), editorBranch.isSelected());
         });
 
         GridPane pane = new GridPane();
@@ -536,14 +576,12 @@ public class MenuController {
         newWindow.show();
     }
 
-    @FXML
-    public void createDirectory() {
-        modalCreate("Нова папка", false);
+    public void createFile(TreeCell<File> cell) {
+        modalCreate(cell, true);
     }
 
-    @FXML
-    public void createFile() {
-        modalCreate("Новий файл", true);
+    public void createDirectory(TreeCell<File> cell) {
+        modalCreate(cell, false);
     }
 
     @FXML

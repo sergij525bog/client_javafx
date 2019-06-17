@@ -16,15 +16,8 @@
             <menus>
                 <Menu text="File">
                     <items>
-                        <Menu text="Новий...">
-                            <MenuItem onAction="#createProject" text="Проект" />
-                            <MenuItem onAction="#createDirectory" text="Каталог" />
-                            <MenuItem onAction="#createFile" text="Файл" />
-                        </Menu>
-                        <Menu text="Відкрити...">
-                            <MenuItem onAction="#openProject" text="Проект" />
-                            <MenuItem onAction="#openFile" text="Файл" />
-                        </Menu>
+                        <MenuItem text="Новий проект" />
+                        <MenuItem text="Відкрити проект" onAction="#openProject" />
                         <MenuItem onAction="#saveFile" text="Зберегти файл" />
                         <MenuItem onAction="#saveFileAs" text="Зберегти файл як..." />
                         <!--<Menu text="Перейменувати...">
