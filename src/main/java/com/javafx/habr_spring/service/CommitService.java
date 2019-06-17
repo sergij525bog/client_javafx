@@ -92,9 +92,9 @@ public class CommitService {
     }*/
 
     public ArrayList<Commit> loadCommits(Long projectId) {
+        ArrayList<Commit> commits = new ArrayList<>();
         ClientProject project = projectRepository.findById(projectId).get();
         ArrayList<ClientFile> clientFiles = fileRepository.findByProject(project);
-        ArrayList<Commit> commits = new ArrayList<>();
         for(int i = 0; i < clientFiles.size(); i++) {
             commits.addAll(commitRepository.findByCurrentFile(clientFiles.get(i)));
         }

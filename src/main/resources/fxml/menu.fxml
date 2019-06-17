@@ -27,14 +27,14 @@
                         </Menu>
                         <MenuItem onAction="#saveFile" text="Зберегти файл" />
                         <MenuItem onAction="#saveFileAs" text="Зберегти файл як..." />
-                        <Menu text="Перейменувати...">
+                        <!--<Menu text="Перейменувати...">
                             <MenuItem onAction="#renameDirectory" text="Каталог" />
                             <MenuItem onAction="#renameFile" text="Файл" />
                         </Menu>
                         <Menu text="Видалити...">
                             <MenuItem onAction="#deleteDirectory" text="Каталог" />
                             <MenuItem onAction="#deleteFile" text="Файл" />
-                        </Menu>
+                        </Menu>-->
                         <SeparatorMenuItem />
                         <MenuItem onAction="#closeProgram" text="Вихід" />
                     </items>

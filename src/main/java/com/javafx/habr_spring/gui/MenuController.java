@@ -13,6 +13,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.HTMLEditor;
 import javafx.stage.DirectoryChooser;
@@ -54,6 +56,9 @@ public class MenuController {
     @FXML
     private TreeView filesTree;
 
+    private ArrayList<String> files = new ArrayList<>();
+    private ArrayList<String> directories = new ArrayList<>();
+
     private Stage window;
 
     private final FileChooser fileChooser = new FileChooser();
@@ -72,66 +77,41 @@ public class MenuController {
     @PostConstruct
     public void init() {
         menuBar = new MenuBar();
+        setFileTree("/home/sbogdan/IdeaProjects/aws");
+    }
+
+    private void setFileTree(String path) {
+        filesTree.setRoot(createTree(new File(path)));
+        filesTree.setCellFactory(event -> new TreeCell<File>(){
+            @Override
+            protected void updateItem(File item, boolean empty) {
+                super.updateItem(item, empty);
+                if(item != null) {
+                    setText(item.getName());
+                } else {
+                    setText("");
+                }
+            }
+        });
     }
 
     @FXML
     public void openProject() {
         directory = fileModel.open(OpenFileType.PROJECT, window);
-        filesTree = new TreeView();
-        TreeItem<String> projectDir = new TreeItem<>(directory.getName());
-        projectDir.setExpanded(true);
-        getTree(directory.getAbsolutePath());
-
+        setFileTree(directory.getAbsolutePath());
     }
 
-    public void getTree(String path) {
-        TreeItem<Object> tree = new TreeItem<>(path.substring(path.lastIndexOf(File.separator)));
-        List<TreeItem<Object>> dirs = new ArrayList<>();
-        List<TreeItem<Object>> files = new ArrayList<>();
-
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(path))) {
-            for(Path dPath: directoryStream) {
-                if (Files.isDirectory(dPath)) {
-                    TreeItem<Object> subDirectory = new TreeItem<>(path);
-                    getSubLeafs(dPath, subDirectory);
-                    dirs.add(subDirectory);
-                } else {
-                    files.add(getLeafs(dPath));
-                }
+    private TreeItem<File> createTree(File file) {
+        TreeItem<File> item = new TreeItem<>(file);
+        File[] childs = file.listFiles();
+        if (childs != null) {
+            for (File child : childs) {
+                item.getChildren().add(createTree(child));
             }
-
-            tree.getChildren().addAll(dirs);
-            tree.getChildren().addAll(files);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        return item;
     }
 
-    private TreeItem<Object> getLeafs(Path subPath) {
-        String strPath = subPath.toString();
-        System.out.println("leaf " + strPath);
-        TreeItem<Object> leafs = new TreeItem<>(strPath.substring(1 + strPath.lastIndexOf(File.separator)));
-        return leafs;
-    }
-
-    private void getSubLeafs(Path subPath, TreeItem<Object> parent) {
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(subPath.toString()))) {
-            for(Path subDir: directoryStream) {
-                // explicit search for files because we dont want to get sub-sub-directories
-                String subTree = subDir.toString();
-                if (!Files.isDirectory(subDir)) {
-
-                    System.out.println("subLeaf" + subTree);
-                    TreeItem<Object> subLeafs = new TreeItem<>(subTree.substring(1 + subTree.lastIndexOf(File.separator)));
-                    parent.getChildren().add(subLeafs);
-                } else {
-                    System.out.println("directory " + subTree);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @FXML
     private void openFile(){
@@ -200,13 +180,38 @@ public class MenuController {
     @FXML
     private void commitFile(){
         ClientFile file = new ClientFile();
-        file.setFilename(MenuController.file.getName());
-        file.setFilesize(MenuController.file.length());
-        file.setFiledata(area.getText().getBytes());
-        ArrayList<ClientFile> filesToCommit = commitService.checkFilesOnChanges(file);
-        if(filesToCommit != null && !filesToCommit.isEmpty()) {
-            commitService.commitFiles(filesToCommit, /*descriptionField.getText()*/ "Some description");
+        if(MenuController.file != null) {
+            file.setFilename(MenuController.file.getName());
+            file.setFilesize(MenuController.file.length());
+            file.setFiledata(area.getText().getBytes());
+            ArrayList<ClientFile> filesToCommit = commitService.checkFilesOnChanges(file);
+            if (filesToCommit != null && !filesToCommit.isEmpty()) {
+                commitService.commitFiles(filesToCommit, /*descriptionField.getText()*/ "Some description");
+            }
+        } else {
+            errorWindow("Жодного файлу не вибрано!");
         }
+    }
+
+    private void errorWindow(String error) {
+        Stage stage = new Stage();
+        stage.setTitle("Помилка!!!");
+
+        Label errorLabel = new Label(error);
+        Button ok = new Button("Зрозуміло");
+        ok.setOnAction(event -> {
+            stage.close();
+        });
+
+        BorderPane pane = new BorderPane();
+        pane.setCenter(errorLabel);
+        pane.setBottom(ok);
+        //pane.getChildren().addAll(errorLabel, ok);
+        Scene scene = new Scene(pane, 300, 200);
+        stage.setScene(scene);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(window);
+        stage.show();
     }
 
     @FXML
@@ -239,7 +244,9 @@ public class MenuController {
         }
         ObservableList<String> versions = FXCollections.observableArrayList(variants);
         ChoiceBox<String> langsChoiceBox = new ChoiceBox<>(versions);
-        langsChoiceBox.setValue(variants[variants.length - 1]);
+        if(variants.length > 0) {
+            langsChoiceBox.setValue(variants[variants.length - 1]);
+        }
 
         Label lbl = new Label();
         langsChoiceBox.setOnAction(event -> lbl.setText(langsChoiceBox.getValue()));
@@ -276,6 +283,51 @@ public class MenuController {
 
     }
 
+    private void modalCreate(String title, boolean isFile) {
+        Stage createWindow = new Stage();
+        createWindow.setTitle(title);
+
+        Button okButton = new Button("Ок");
+        Button cancelButton = new Button("Відмінити");
+
+        Label name = new Label("Назва");
+        Label type = new Label("Тип");
+
+        GridPane pane = new GridPane();
+
+        ObservableList<String> types = FXCollections.observableArrayList("Файл", "Папка");
+
+        TextField filename = new TextField("");
+        ComboBox fileType = new ComboBox(types);
+        if (isFile) {
+            fileType.setValue(types.get(0));
+        } else {
+            fileType.setValue(types.get(1));
+        }
+
+        okButton.setOnAction(event -> {
+            fileModel.createFile(fileType.getValue() == types.get(0));
+            createWindow.close();
+        });
+
+        cancelButton.setOnAction(event -> {
+            createWindow.close();
+        });
+
+        pane.add(name, 1, 1);
+        pane.add(filename, 2, 1);
+        pane.add(type, 1, 2);
+        pane.add(fileType, 2, 2);
+        pane.add(okButton, 2, 3);
+        pane.add(cancelButton, 3, 3);
+
+        Scene scene = new Scene(pane, 600, 400);
+        createWindow.setScene(scene);
+        createWindow.initModality(Modality.WINDOW_MODAL);
+        createWindow.initOwner(window);
+        createWindow.show();
+    }
+
     @FXML
     public void aboutProgram() {
 
@@ -283,17 +335,51 @@ public class MenuController {
 
     @FXML
     public void createProject() {
+        Stage newWindow = new Stage();
+        Button okButton = new Button("Ок");
+        Button cancelButton = new Button("Відмінити");
 
+        Label nameProject = new Label("Назва");
+        Label pathProject = new Label("Шлях");
+        TextField name = new TextField("Новий проект");
+        TextField path = new TextField("");
+
+        CheckBox mainBranch = new CheckBox("Головна частина");
+        CheckBox writerBranch = new CheckBox("Частина автора");
+        CheckBox editorBranch = new CheckBox("Частина редактора");
+
+        okButton.setOnAction(event -> {
+            fileModel.createProject(name.getText(), path.getText(), mainBranch.isSelected(), writerBranch.isSelected(), editorBranch.isSelected());
+        });
+
+        GridPane pane = new GridPane();
+
+        Scene secondScene = new Scene(pane, 230, 100);
+
+        newWindow.setTitle("Новий проект");
+        newWindow.setScene(secondScene);
+
+        // Specifies the modality for new window.
+        newWindow.initModality(Modality.WINDOW_MODAL);
+
+        // Specifies the owner Window (parent) for new window
+        newWindow.initOwner(window);
+
+        // Set position of second window, related to primary window.
+        newWindow.setHeight(500);
+        newWindow.setWidth(400);
+        newWindow.centerOnScreen();
+        newWindow.show();
     }
 
     @FXML
     public void createDirectory() {
-
+        modalCreate("Нова папка", false);
     }
 
     @FXML
     public void createFile() {
-
+        modalCreate("Новий файл", true);
     }
 
     @FXML
@@ -314,5 +400,35 @@ public class MenuController {
     @FXML
     public void deleteFile() {
 
+    }
+
+    private void modalRenameDelete (String title, boolean task) {
+        Stage stage = new Stage();
+        stage.setTitle(title);
+
+        Label errorLabel = new Label("Введіть нову назву");
+        TextField newName = new TextField();
+        Button okButton = new Button("Ок");
+        Button cancelButton = new Button("Відмінити");
+        okButton.setOnAction(event -> {
+            /*if (task) {
+                fileModel.renameFile(newName.getText());
+            } else {
+                fileModel.deleteFile();
+            }*/
+            stage.close();
+        });
+
+        cancelButton.setOnAction(event -> {
+            stage.close();
+        });
+
+        GridPane pane = new GridPane();
+
+        Scene scene = new Scene(pane, 300, 200);
+        stage.setScene(scene);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(window);
+        stage.show();
     }
 }

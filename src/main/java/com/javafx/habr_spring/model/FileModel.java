@@ -72,6 +72,11 @@ public class FileModel {
     }
 
 
+    public void createProject(String nameProject, String pathProject, boolean main, boolean writer, boolean editor) {
 
+    }
 
+    public void createFile(boolean isFile) {
+
+    }
 }
