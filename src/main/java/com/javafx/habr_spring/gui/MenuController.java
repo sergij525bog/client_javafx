@@ -1,6 +1,7 @@
 package com.javafx.habr_spring.gui;
 
 
+import com.javafx.habr_spring.model.client.ClientProject;
 import com.javafx.habr_spring.service.FileService;
 import com.javafx.habr_spring.model.OpenFileType;
 import com.javafx.habr_spring.model.client.ClientFile;
@@ -36,6 +37,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.Set;
 
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class MenuController {
@@ -49,13 +51,7 @@ public class MenuController {
     private PushService pushService;
 
     @FXML
-    private TextArea area;
-
-    @FXML
     private MenuBar menuBar;
-
-    @FXML
-    private TextField descriptionField;
 
     @FXML
     private TreeView filesTree;
@@ -72,9 +68,14 @@ public class MenuController {
     private ArrayList<File> projectFiles = new ArrayList<>();
     private static File directory;
     private String filename;
-    private FileService fileService = new FileService(fileChooser, directoryChooser);
+    //private FileService fileService = new FileService(fileChooser, directoryChooser);
+    @Autowired
+    private FileService fileService;
 
     private TreeItem<File> currentItem;
+
+    private ClientProject currentProject = null;
+    private ClientProject defaultProject = new ClientProject(System.getProperty("user.home"));
 
     @FXML
     public void initialize() {
@@ -85,7 +86,11 @@ public class MenuController {
     @PostConstruct
     public void init() {
         menuBar = new MenuBar();
-        setFileTree("/home/sbogdan/Документи");
+        if(currentProject == null) {
+            setFileTree(defaultProject.getName());
+        } else {
+            setFileTree(currentProject.getName());
+        }
         //checkBoxTree("/home/sbogdan/IdeaProjects/aws");
     }
 
@@ -222,7 +227,6 @@ public class MenuController {
         MenuItem createDirectory = new MenuItem("Папку");
         create.getItems().addAll(createFile, createDirectory);
 
-        MenuItem open = new MenuItem("Відкрити файл");
         MenuItem rename = new MenuItem("Перейменувати");
         MenuItem delete = new MenuItem("Видалити");
 
@@ -232,10 +236,6 @@ public class MenuController {
 
         createDirectory.setOnAction(event -> {
             createDirectory(cell);
-        });
-
-        open.setOnAction(event -> {
-            openFile();
         });
 
         rename.setOnAction(event -> {
@@ -252,7 +252,7 @@ public class MenuController {
             }
         });
 
-        cm.getItems().addAll(create, open, rename, delete);
+        cm.getItems().addAll(create, rename, delete);
         return cm;
     }
 
@@ -302,83 +302,47 @@ public class MenuController {
         return item;
     }
 
-    private void openFile(){
-        try {
-            file = fileService.open(OpenFileType.FILE, window);
-            if(file != null) {
-                FileReader reader = new FileReader(file);
-                Scanner scanner = new Scanner(reader);
-                area.clear();
-                while (scanner.hasNext()) {
-                    area.appendText(scanner.nextLine() + "\n");
-                }
-                reader.close();
-                scanner.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void saveFile(){
-        if(file == null){
-            System.out.println("File not opened");
-            return;
-        }
-        this.filename = file.getAbsolutePath();
-        try {
-            FileWriter writer = new FileWriter(this.filename);
-            if(!area.getText().isEmpty()){
-                writer.write(area.getText());
-                System.out.println("Save " + area.getScene());
-            }
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    public void saveFileAs() {
-        file = fileChooser.showSaveDialog(window);
-        saveFile();
-    }
-
-    @FXML
-    public void closeProgram(){
-        if(file == null || file.toString().equals(area.getText()) || file.isDirectory()){
-            System.out.println("Not found changes, program closed");
-        } else {
-            this.filename = file.getAbsolutePath();
-            FileWriter writer;
-            try {
-                writer = new FileWriter(filename);
-                writer.write(area.getText());
-                System.out.println("File " + filename + " saved and closed");
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        window = (Stage) area.getScene().getWindow();
-        window.close();
-    }
-
     @FXML
     private void commitFile(){
-        ClientFile file = new ClientFile();
-        if(MenuController.file != null) {
+        TreeView<File> treeView = checkBoxTree("/home/sbogdan/Документи");
+        Stage stage = new Stage();
+        stage.setTitle("Зберегти версії файлів");
+        BorderPane pane = new BorderPane();
+        pane.setCenter(treeView);
+        Button okButton = new Button("Ок");
+        Button cancelButton = new Button("Відмінити");
+        GridPane gridPane = new GridPane();
+        okButton.setOnAction(event -> {
+            stage.close();
+        });
+
+        cancelButton.setOnAction(event -> {
+            stage.close();
+        });
+        gridPane.add(okButton, 1, 1);
+        gridPane.add(cancelButton, 2, 1);
+        pane.setBottom(gridPane);
+
+        Scene scene = new Scene(pane);
+        stage.setScene(scene);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(window);
+        stage.show();
+
+        //ClientFile file = new ClientFile();
+        //Set<ClientFile> files = fileService.findAllByProject();
+        /*if(MenuController.file != null) {
             file.setFilename(MenuController.file.getName());
             file.setFilesize(MenuController.file.length());
             file.setFiledata(area.getText().getBytes());
             ArrayList<ClientFile> filesToCommit = commitService.checkFilesOnChanges(file);
             if (filesToCommit != null && !filesToCommit.isEmpty()) {
-                commitService.commitFiles(filesToCommit, /*descriptionField.getText()*/ "Some description");
+                commitService.commitFiles(filesToCommit, *//*descriptionField.getText()*//* "Some description");
             }
         } else {
             errorWindow(window,"Жодного файлу не вибрано!");
-        }
+        }*/
+        //for (ClientFile )
     }
 
     private void errorWindow(Stage owner, String error) {
@@ -421,6 +385,7 @@ public class MenuController {
         Button click = new Button("OK");
         ArrayList<Commit> commits = commitService.loadCommits(commitService.findById(1L).getId());
         String[] filenames = new String[commits.size()];
+        System.out.println(commits.size());
         String[] descriptions = new String[commits.size()];
         Date[] dates = new Date[commits.size()];
         String[] variants = new String[commits.size()];
@@ -466,10 +431,6 @@ public class MenuController {
 
         //commitService.loadFiles();
         return null;
-    }
-
-    private void printLog(TextArea area, File file){
-
     }
 
     private void modalCreate(TreeCell<File> cell, boolean isFile) {
@@ -533,15 +494,11 @@ public class MenuController {
     }
 
     @FXML
-    public void aboutProgram() {
-
-    }
-
-    @FXML
     public void createProject() {
         Stage newWindow = new Stage();
         Button okButton = new Button("Ок");
         Button cancelButton = new Button("Відмінити");
+        Button pathButton = new Button("...");
 
         Label nameProject = new Label("Назва");
         Label pathProject = new Label("Шлях");
@@ -553,12 +510,43 @@ public class MenuController {
         CheckBox editorBranch = new CheckBox("Частина редактора");
 
         okButton.setOnAction(event -> {
-            fileService.createProject(name.getText(), path.getText(), mainBranch.isSelected(), writerBranch.isSelected(), editorBranch.isSelected());
+            if (name.getText().isEmpty()) {
+                errorWindow(newWindow,"Ви не ввели назву проекту!");
+            }
+            if (path.getText().isEmpty()) {
+                errorWindow(newWindow,"Ви не вказала шлях до проекту!");
+            }
+            if (!name.getText().isEmpty() && !path.getText().isEmpty()) {
+                fileService.createProject(name.getText(), path.getText(), mainBranch.isSelected(), writerBranch.isSelected(), editorBranch.isSelected());
+                newWindow.close();
+            }
+        });
+
+        cancelButton.setOnAction(event -> {
+            newWindow.close();
+        });
+
+        pathButton.setOnAction(event -> {
+            File file = directoryChooser.showDialog(newWindow);
+            if (file != null) {
+                String pathForProject = file.getPath();
+                path.setText(pathForProject);
+            }
         });
 
         GridPane pane = new GridPane();
+        pane.add(nameProject, 1, 1);
+        pane.add(name, 2, 1);
+        pane.add(pathProject, 1, 2);
+        pane.add(path, 2, 2);
+        pane.add(pathButton, 3, 2);
+        pane.add(mainBranch, 1, 3);
+        pane.add(writerBranch, 1, 4);
+        pane.add(editorBranch, 1, 5);
+        pane.add(okButton, 2, 6);
+        pane.add(cancelButton, 3, 6);
 
-        Scene secondScene = new Scene(pane, 230, 100);
+        Scene secondScene = new Scene(pane, 600, 400);
 
         newWindow.setTitle("Новий проект");
         newWindow.setScene(secondScene);
@@ -583,26 +571,4 @@ public class MenuController {
     public void createDirectory(TreeCell<File> cell) {
         modalCreate(cell, false);
     }
-
-    @FXML
-    public void renameDirectory() {
-
-    }
-
-    @FXML
-    public void renameFile() {
-        file.renameTo(new File("kdg"));
-    }
-
-    @FXML
-    public void deleteDirectory() {
-
-    }
-
-    @FXML
-    public void deleteFile() {
-
-    }
-
-
 }

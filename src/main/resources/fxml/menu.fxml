@@ -4,9 +4,6 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.BorderPane?>
 
@@ -14,12 +11,12 @@
     <top>
         <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
             <menus>
-                <Menu text="File">
+                <Menu text="Проект">
                     <items>
-                        <MenuItem text="Новий проект" />
-                        <MenuItem text="Відкрити проект" onAction="#openProject" />
-                        <MenuItem onAction="#saveFile" text="Зберегти файл" />
-                        <MenuItem onAction="#saveFileAs" text="Зберегти файл як..." />
+                        <MenuItem onAction="#createProject" text="Новий проект" />
+                        <MenuItem onAction="#openProject" text="Відкрити проект" />
+                        <!--<MenuItem onAction="#saveFile" text="Зберегти файл" />
+                        <MenuItem onAction="#saveFileAs" text="Зберегти файл як..." />-->
                         <!--<Menu text="Перейменувати...">
                             <MenuItem onAction="#renameDirectory" text="Каталог" />
                             <MenuItem onAction="#renameFile" text="Файл" />
@@ -28,15 +25,6 @@
                             <MenuItem onAction="#deleteDirectory" text="Каталог" />
                             <MenuItem onAction="#deleteFile" text="Файл" />
                         </Menu>-->
-                        <SeparatorMenuItem />
-                        <MenuItem onAction="#closeProgram" text="Вихід" />
-                    </items>
-                </Menu>
-                <Menu text="Edit">
-                    <items>
-                        <MenuItem text="Copy" />
-                        <MenuItem text="Cut" />
-                        <MenuItem text="Paste" />
                     </items>
                 </Menu>
                 <Menu text="Версії">
@@ -47,27 +35,11 @@
                         <MenuItem onAction="#pullFile" text="Завантажити з сервера" />
                     </items>
                 </Menu>
-                <Menu text="Help">
-                    <items>
-                        <MenuItem disable="true" text="Search" />
-                        <MenuItem onAction="#aboutProgram" text="About" />
-                    </items>
-                </Menu>
+
             </menus>
         </MenuBar>
     </top>
-    <center>
-        <TabPane BorderPane.alignment="CENTER">
-            <tabs>
-                <Tab>
-                    <content>
-                        <TextArea fx:id="area" prefHeight="200.0" prefWidth="200.0" />
-                    </content>
-                </Tab>
-            </tabs>
-        </TabPane>
-    </center>
-   <left>
+   <center>
       <TreeView fx:id="filesTree" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </left>
+   </center>
 </BorderPane>

@@ -98,7 +98,7 @@ public class CommitService {
         for(int i = 0; i < clientFiles.size(); i++) {
             commits.addAll(commitRepository.findByCurrentFile(clientFiles.get(i)));
         }
-        System.out.println();
+
         /*for(int i = 0; i < commits.size(); i++) {
             System.out.println(commits.get(i).getCurrentFile().getFilename() + " - " + commits.get(i).getCommitDate());
         }*/

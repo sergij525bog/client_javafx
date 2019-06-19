@@ -28,7 +28,7 @@ public class ClientApplication extends ApplicationSupport{
         primaryStage.setResizable(true);
         primaryStage.centerOnScreen();
         primaryStage.setOnCloseRequest(event -> {
-            ((MenuController) view.getController()).closeProgram();
+            primaryStage.close();
         });
 
         primaryStage.show();

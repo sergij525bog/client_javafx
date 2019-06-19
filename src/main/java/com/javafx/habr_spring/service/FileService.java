@@ -1,31 +1,41 @@
 package com.javafx.habr_spring.service;
 
 import com.javafx.habr_spring.model.OpenFileType;
+import com.javafx.habr_spring.model.client.ClientFile;
+import com.javafx.habr_spring.model.client.ClientProject;
+import com.javafx.habr_spring.repository.client.ClientProjectRepository;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
+@Service
 public class FileService {
-    private final FileChooser fileChooser;
-    private final DirectoryChooser directoryChooser;
+    @Autowired
+    private ClientProjectRepository projectRepository;
+
+    private FileChooser fileChooser = new FileChooser();
+    private DirectoryChooser directoryChooser = new DirectoryChooser();
     private static File file;
     private static File directory;
     private String filename;
 
-    public FileService(FileChooser fileChooser, DirectoryChooser directoryChooser) {
-        this.fileChooser = fileChooser;
+    public FileService() {
         this.fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         this.fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Всі файли", "*.*"),
                 new FileChooser.ExtensionFilter(".TXT", "*.txt"),
                 new FileChooser.ExtensionFilter(".DOCX", "*.docx*")
         );
-        this.directoryChooser = directoryChooser;
         this.directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
     }
 
@@ -55,7 +65,7 @@ public class FileService {
             while (scanner.hasNext()) {
                 homeProject.append(scanner.nextLine());
             }
-            System.out.println("Home project is " + homeProject);
+            //System.out.println("Home project is " + homeProject);
             reader.close();
             scanner.close();
             } catch (IOException e) {
@@ -64,7 +74,7 @@ public class FileService {
 
         fileChooser.setInitialDirectory(new File(homeProject.toString()));
         file = fileChooser.getInitialDirectory();
-        System.out.println("File is " + file.getAbsolutePath());
+        //System.out.println("File is " + file.getAbsolutePath());
         return file;
     }
 
@@ -74,7 +84,24 @@ public class FileService {
 
 
     public void createProject(String nameProject, String pathProject, boolean main, boolean writer, boolean editor) {
-
+        File newProject = new File(pathProject + "/" + nameProject);
+        if (newProject.mkdir()) {
+            ClientProject clientProject = new ClientProject(newProject.getName());
+            projectRepository.save(clientProject);
+        }
+        Set<ClientFile> files = new HashSet<>();
+        if(main) {
+            File mainBranch = new File(newProject.getAbsolutePath() + "/" + "Головна частина");
+            mainBranch.mkdir();
+        }
+        if(writer) {
+            File writerBranch = new File(newProject.getAbsolutePath() + "/" + "Частина автора");
+            writerBranch.mkdir();
+        }
+        if(main) {
+            File editorBranch = new File(newProject.getAbsolutePath() + "/" + "Частина редактора");
+            editorBranch.mkdir();
+        }
     }
 
     public boolean createFile(String filename, boolean isFile) {
